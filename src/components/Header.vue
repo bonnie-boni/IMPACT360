@@ -28,7 +28,7 @@
     text-decoration: none;
     list-style: none;
     font-family: Poppins;
-    transition: all 0.3s ease-in-out;
+    transition: all 0.2s ease-in-out;
     color: black;
 }
 .header {
