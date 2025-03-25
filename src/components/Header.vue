@@ -5,9 +5,9 @@
     </div>
     <div class="nav__menu">
       <ul>
-        <li><router-link to="#">Home</router-link></li>
+        <li><router-link to="/">Home</router-link></li>
         <li><router-link to="#">About</router-link></li>
-        <li><router-link to="#">Events</router-link></li>
+        <li><router-link to="/events">Events</router-link></li>
         <li><router-link to="#">I3 LAUNCHPAD</router-link></li>
         <li><router-link to="#">Blog</router-link></li>
         <li><router-link to="#">Contact</router-link></li>
@@ -44,7 +44,7 @@
 }
 
 .nav__logo img {
-  width: 70px;
+  width: 150px;
   padding: 1rem;
 }
 .nav__menu ul {
