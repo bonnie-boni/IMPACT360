@@ -6,18 +6,38 @@
     <div class="nav__menu">
       <ul>
         <li><router-link to="/">Home</router-link></li>
-        <li><router-link to="#">About</router-link></li>
+        <li><router-link to="/about">About</router-link></li>
         <li><router-link to="/events">Events</router-link></li>
-        <li><router-link to="#">I3 LAUNCHPAD</router-link></li>
-        <li><router-link to="#">Blog</router-link></li>
-        <li><router-link to="#">Contact</router-link></li>
+        <li><router-link to="/i3-launchpad">I3 LAUNCHPAD</router-link></li>
+        <li><router-link to="/blog">Blog</router-link></li>
+        <li><router-link to="/contact">Contact</router-link></li>
       </ul>
     </div>
   </div>
 </template>
 
 <script>
+import { ref, onMounted, onUnmounted } from 'vue';
 
+export default {
+  name: 'Header',
+  setup() {
+    const isScrolled = ref(false);
+
+    const handleScroll = () => {
+      isScrolled.value = window.scrollY > 10; // Add transparency when scrolled more than 10px
+    };
+    onMounted(() => {
+      window.addEventListener('scroll', handleScroll);
+    });
+
+    onUnmounted(() => {
+      window.removeEventListener('scroll', handleScroll);
+    });
+
+    return { isScrolled };
+  },
+};
 </script>
 <style scoped>
 /* base styles */
@@ -37,10 +57,19 @@
   align-items: center;
   background-color: white;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  position: relative;
+  position: sticky;
+  top: 10px;
+  z-index: 1000;
   width: 100%;
   height: 70px;
   border-radius: 10px;
+  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  
+}
+.header--scrolled {
+  background-color: rgba(255, 255, 255, 0.9); /* Transparent white */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Lighter shadow */
+  backdrop-filter: blur(10px); /* Optional: Adds a blur effect */
 }
 
 .nav__logo img {

@@ -13,6 +13,8 @@
       </div>
     </div>
   </div>
+
+
 </template>
 
 <script>
@@ -72,13 +74,17 @@ p {
   line-height: 1.5;
   margin-bottom: 30px;
 }
+.btn{
+  gap:20px;
+  display: flex;
+}
 .btn button {
   font-family: sans-serif;
   font-size: medium;
   gap: 40px;
   border-radius: 5px;
   margin: 2px 3px;
-  padding: 10px 20px;
+  padding: 20px 60px;
   border: none;
   background-color:#2d1f38;
   color:white;
