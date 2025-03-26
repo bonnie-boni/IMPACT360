@@ -84,18 +84,18 @@ library.add(faLinkedin, faInstagram, faTiktok);
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 20px;
+  gap: 10px;
 }
 
 .footer-section {
   display: flex;
   flex-direction: column;
-  min-width: 200px;
+  min-width: 150px;
 }
 
 .logo {
-  height: 50px;
-  width: 50px;
+  height: 70px;
+  width: 70px;
   margin-bottom: 10px;
 }
 

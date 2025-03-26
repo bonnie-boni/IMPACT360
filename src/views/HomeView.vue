@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import HomePage from '@/components/pages/Home.vue'
+import HomePage from '@/pages/Home.vue'
 
 export default {
   name: 'HomeView',
