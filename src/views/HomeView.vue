@@ -1,15 +1,20 @@
 <template>
-  <HomePage />
+  <Hero />
+  <Cards />
 </template>
 
 <script>
-import HomePage from '@/pages/Home.vue'
+import Hero from '@/components/Hero.vue'
+import Cards from '@/components/Cards.vue'
 
 export default {
   name: 'HomeView',
   components: {
-    HomePage,
+    Hero,
+    Cards,
   },
+  
 }
+
 </script>
 <style scoped></style>
