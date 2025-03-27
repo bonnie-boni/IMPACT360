@@ -6,7 +6,8 @@
         <div class="footer-section">
           <img :src="logo" alt="Impact360 Logo" class="logo" />
           <p class="description">
-            Empowering communities through technology and entrepreneurship.
+            Empowering communities in africa through accessible <br/> tech education and 
+        entrepreneurship opportunities.<br/>Join us in building a more inclusive future
           </p>
         </div>
 
