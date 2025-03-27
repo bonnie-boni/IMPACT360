@@ -2,7 +2,7 @@
   <div class="hero">
     <div class="hero__overlay"></div>
     <div class="hero__content">
-      <h1>Decentralizing Tech & Entrepreneurship</h1>
+      <h1 id="text">Decentralizing Tech & Entrepreneurship</h1>
       <p>
         Empowering communities in africa through accessible tech education and <br />
         entrepreneurship opportunities.Join us in building a more inclusive future
@@ -14,6 +14,19 @@
     </div>
   </div>
 
+<!-- end of hero page -->
+ <!-- Start of who we are section -->
+  <div class="who-we-are">
+    <div class="who-we-are__content">
+      <h2>Empower Innovation Across Africa</h2>
+      <p>
+      Impact360 is an events and ecosystem-building company that democratizes access 
+      to technopreneurship resources and supports startups through our I3-LAUNCHPAD incubator.
+       We bridge the gap between major cities and smaller towns, equipping communities with dynamic events,
+        expert-led workshops, and invaluable networking opportunities to fuel innovation and growth.
+      </p>
+    </div>
+  </div>
 
 </template>
 
@@ -21,6 +34,19 @@
 export default {
   name: 'HomePage',
 }
+// const textEl=document.getElementById('text');
+// const text = 'Decentralizing Tech & Entrepreneurship';
+// let idx = 1;
+// let speed = 300 ;
+// writeText();
+// function writeText() {
+//   textEl.innerText = text.slice(0, idx);
+//   idx++;
+//   if (idx > text.length) {
+//     idx = 1;
+//   }
+//   setTimeout(writeText, speed);
+// }
 </script>
 
 <style scoped>
