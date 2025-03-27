@@ -2,8 +2,8 @@
   <div class="Cards">
     <!-- Header Section -->
     <div class="header">
-      <h2>Featured Events</h2>
-      <p>Join our upcoming events and be part of the change</p>
+      <h2>Empowering Entrepreneurs & Ecosystems</h2>
+      <p>From game-changing events to startup acceleration, we make impact happen.</p>
     </div>
 
     <!-- Events List -->
@@ -24,7 +24,7 @@
 <script>
 import Bg1 from '@/assets/Bg1.jpg'
 import Bg2 from '@/assets/Bg2.jpg'
-import Bg3 from '@/assets/Bg3.jpg'
+import Bg4 from '@/assets/Bg4jpg.jpg'
 
 
 export default {
@@ -37,9 +37,9 @@ export default {
           image: Bg1,
           date: 'October 4, 2024',
           location: 'Nakuru, Kenya',
-          title: 'Beyond Now Summit',
+          title: 'Beyond Now: The Future With AI',
           description:
-            'Creating the Future today.Join Industry leaders and inovaters for our bi-annual summitt',
+            'Where Africa’s top innovators tackle challenges and spark innovation.',
         },
         {
           id: 2,
@@ -51,11 +51,11 @@ export default {
         },
         {
           id: 3,
-          image: Bg3,
+          image: Bg4,
           // date: 'April 20, 2024',
-          location: 'London',
-          title: 'AI Innovation Summit',
-          description: 'Explore the latest in AI technology and its impact on business.',
+          location: 'Africa',
+          title: 'Plan your Event with impact360',
+          description: 'Let us handle everything—venue, speakers, and logistics—for a seamless event.',
         },
       ],
     }
@@ -65,6 +65,7 @@ export default {
 
 <style scoped>
 .Cards {
+  font-family: sans-serif;
   text-align: center;
   padding: 40px;
   background-color: #fff;

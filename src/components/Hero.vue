@@ -8,8 +8,8 @@
         entrepreneurship opportunities.Join us in building a more inclusive future
       </p>
       <div class="btn">
-       <RouterLink to="/i3-launchpad"><button >Join I3LAUNCHPAD</button></RouterLink> 
-       <RouterLink to="/events"><button >View Upcoming Events</button></RouterLink>
+       <RouterLink to="/i3-launchpad" class="btn1"><button >Join I3LAUNCHPAD</button></RouterLink> 
+       <RouterLink to="/events"><button class="btn2">View Upcoming Events</button></RouterLink>
       </div>
     </div>
   </div>
@@ -32,7 +32,7 @@ export default {
   background-image: url('@/assets/Bg1.jpg');
   background-size: cover;
   background-position: center;
-  height: 80vh;
+  height: 90vh;
   color: white;
   display: flex;
   align-items: left;
@@ -86,13 +86,17 @@ p {
   margin: 2px 3px;
   padding: 20px 60px;
   border: none;
-  background-color:black;
-  color:white;
+  /* background-color:black; */
+  /* color:white; */
   
 }
 .btn button:hover {
   background-color: #3a41a5;
   color:rgba(255, 255, 255, 0.8)  ;
   cursor: pointer;
+}
+.btn2 {
+  background-color:black;
+  color:white;
 }
 </style>

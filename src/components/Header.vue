@@ -47,7 +47,7 @@ export default {
     box-sizing: border-box;
     text-decoration: none;
     list-style: none;
-    font-family: Poppins;
+    font-family: sans-serif;
     transition: all 0.2s ease-in-out;
     color: black;
 }
