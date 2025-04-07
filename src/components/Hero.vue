@@ -1,11 +1,11 @@
 <template>
+ 
   <div class="hero">
     <div class="hero__overlay"></div>
     <div class="hero__content">
       <h1>Decentralizing Tech & Entrepreneurship</h1>
       <p>
-        Empowering communities in africa through accessible tech education and <br />
-        entrepreneurship opportunities.Join us in building a more inclusive future
+        Bringing Technopreneurship Resources Closer to You—Together,We’re Building Africa’s Technopreneurship Ecosystem.
       </p>
       <div class="btn">
        <RouterLink to="/i3-launchpad" class="btn1"><button >Join I3LAUNCHPAD</button></RouterLink> 
@@ -13,6 +13,7 @@
       </div>
     </div>
   </div>
+  
 
 
 </template>
@@ -98,5 +99,59 @@ p {
 .btn2 {
   background-color:black;
   color:white;
+}
+@media screen and (max-width: 768px) {
+  .hero {
+    height: 100vh;
+    padding: 0 20px;
+    text-align: left;
+    align-items: left;
+    justify-content: left;
+  }
+  h1 {
+    font-size: 2.5rem;
+    margin-top: 50px; 
+  }
+  p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+  }
+  .btn button {
+    padding: 15px 30px;
+    font-size: medium;
+  }
+  
+}
+@media screen and (max-width: 480px) {
+  .hero {
+    height: 100vh;
+    padding: 0 10px;
+    text-align: left;
+    align-items: left;
+    justify-content: left;
+  }
+  h1 {
+    font-size: 2rem;
+    margin-top: 50px; 
+  }
+  p {
+    font-size: 1rem;
+    margin-bottom: 20px;
+  }
+  .btn button {
+    padding: 10px 20px;
+    font-size: medium;
+  }
+  .btn button:hover {
+    background-color: #3a41a5;
+    color:rgba(255, 255, 255, 0.8)  ;
+    cursor: pointer;
+  }
+  .btn2 {
+    background-color:black;
+    color:white;
+    height: auto;
+  }
+  
 }
 </style>
