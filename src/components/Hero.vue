@@ -9,7 +9,7 @@
       </p>
       <div class="btn">
        <RouterLink to="/i3-launchpad" class="btn1"><button >Join I3LAUNCHPAD</button></RouterLink> 
-       <RouterLink to="/events"><button class="btn2">View Upcoming Events</button></RouterLink>
+       <RouterLink to="/events"><button class="btn2">View Events</button></RouterLink>
       </div>
     </div>
   </div>
@@ -102,7 +102,7 @@ p {
 }
 @media screen and (max-width: 768px) {
   .hero {
-    height: 100vh;
+    height: 70vh;
     padding: 0 20px;
     text-align: left;
     align-items: left;
@@ -114,17 +114,22 @@ p {
   }
   p {
     font-size: 1.2rem;
-    margin-bottom: 20px;
+    margin-bottom: 60px;
+    margin-top: 20px;
   }
   .btn button {
     padding: 15px 30px;
     font-size: medium;
   }
-  
+  .button:hover {
+    background-color: #3a41a5;
+    color:rgba(255, 255, 255, 0.8)  ;
+    cursor: pointer;
+  }
 }
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 360px) {
   .hero {
-    height: 100vh;
+    height: 70vh;
     padding: 0 10px;
     text-align: left;
     align-items: left;
@@ -136,13 +141,14 @@ p {
   }
   p {
     font-size: 1rem;
-    margin-bottom: 20px;
+    margin-bottom: 60px;
+    margin-top: 20px;
   }
   .btn button {
     padding: 10px 20px;
-    font-size: medium;
+    font-size: small;
   }
-  .btn button:hover {
+  .btn2 button:hover {
     background-color: #3a41a5;
     color:rgba(255, 255, 255, 0.8)  ;
     cursor: pointer;
@@ -151,6 +157,12 @@ p {
     background-color:black;
     color:white;
     height: auto;
+    width: auto;
+  }
+  .btn1 {
+    height: auto;
+    width: auto;
+    
   }
   
 }

@@ -74,6 +74,7 @@ library.add(faLinkedin, faInstagram, faTiktok);
   padding: 20px 0;
   text-align: center;
   font-family: sans-serif;
+  
 }
 
 .container {
