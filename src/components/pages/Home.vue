@@ -16,17 +16,7 @@
 
 <!-- end of hero page -->
  <!-- Start of who we are section -->
-  <div class="who-we-are">
-    <div class="who-we-are__content">
-      <h2>Empower Innovation Across Africa</h2>
-      <p>
-      Impact360 is an events and ecosystem-building company that democratizes access 
-      to technopreneurship resources and supports startups through our I3-LAUNCHPAD incubator.
-       We bridge the gap between major cities and smaller towns, equipping communities with dynamic events,
-        expert-led workshops, and invaluable networking opportunities to fuel innovation and growth.
-      </p>
-    </div>
-  </div>
+  
 
 </template>
 
