@@ -145,6 +145,7 @@ export default {
   border: none;
   font-size: 24px;
   cursor: pointer;
+  margin: 0 1rem;
 }
 
 .mobile-menu-toggle span {
