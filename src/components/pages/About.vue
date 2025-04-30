@@ -75,8 +75,9 @@ export default {
   display: flex;
   width: 100%;
   height: 100%;
-  background-color: rgba(52, 112, 234, 0.8);
-  z-index: 1;
+  position: relative;
+  /* background-color: rgba(52, 112, 234, 0.8); */
+  /* z-index: 1; */
 }
 .split {
   position: relative;
@@ -89,8 +90,8 @@ export default {
   padding: 60px 20px 0px 40px;
   /* padding-top: 60px;     */
   left: 0;
-  background-color: black;
-  color: white;
+  background: linear-gradient(to right, #0D2D56,#4B67BC);
+  color: white; 
   height: 85vh;
 }
 .split.left p {

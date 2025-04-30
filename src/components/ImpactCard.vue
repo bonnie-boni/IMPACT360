@@ -29,7 +29,7 @@ export default {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 20px;
   text-align: left;
-  width: 150px;
+  width: 200px;
   margin: 10px;
   font-family: sans-serif;
 }

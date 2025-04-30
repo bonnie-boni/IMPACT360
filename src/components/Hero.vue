@@ -7,7 +7,7 @@
       <p>
         Bringing Technopreneurship Resources Closer to You—Together,We’re Building Africa’s Technopreneurship Ecosystem.
       </p>
-      <div class="btn">
+      <div class="dtn">
        <RouterLink to="/i3-launchpad" class="btn1"><button >Join I3LAUNCHPAD</button></RouterLink> 
        <RouterLink to="/events"><button class="btn2">View Events</button></RouterLink>
       </div>
@@ -75,11 +75,12 @@ p {
   line-height: 1.5;
   margin-bottom: 30px;
 }
-.btn{
+.dtn{
   gap:20px;
   display: flex;
+  
 }
-.btn button {
+.dtn button {
   font-family: sans-serif;
   font-size: medium;
   gap: 40px;
@@ -91,7 +92,7 @@ p {
   /* color:white; */
   
 }
-.btn button:hover {
+.dtn button:hover {
   background-color: #3a41a5;
   color:rgba(255, 255, 255, 0.8)  ;
   cursor: pointer;
@@ -117,7 +118,7 @@ p {
     margin-bottom: 60px;
     margin-top: 20px;
   }
-  .btn button {
+  .dtn button {
     padding: 15px 30px;
     font-size: medium;
   }
@@ -144,7 +145,7 @@ p {
     margin-bottom: 60px;
     margin-top: 20px;
   }
-  .btn button {
+  .dtn button {
     padding: 10px 20px;
     font-size: small;
   }

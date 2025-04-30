@@ -12,17 +12,17 @@
        <RouterLink to="/events"><button >View Upcoming Events</button></RouterLink>
       </div>
     </div>
+    <!-- end of hero page -->
+      <!-- Start of who we are section -->
   </div>
-
-<!-- end of hero page -->
- <!-- Start of who we are section -->
-  
-
+ 
 </template>
 
 <script>
+
 export default {
   name: 'HomePage',
+  
 }
 // const textEl=document.getElementById('text');
 // const text = 'Decentralizing Tech & Entrepreneurship';
