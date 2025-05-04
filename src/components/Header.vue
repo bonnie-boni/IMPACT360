@@ -91,8 +91,10 @@ export default {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
+  /* width: auto; */
   z-index: 1000;
   width: 100%;
+  overflow: hidden;
   height: 70px;
   border-radius: 10px;
   transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
