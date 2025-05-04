@@ -188,4 +188,10 @@ h3{
   font-size: 14px;
   margin-top: 10px;
 }
+
+@media screen  and (max-width:360px){
+  .footer-contacts{
+    flex-direction: column;
+  }
+}
 </style>
