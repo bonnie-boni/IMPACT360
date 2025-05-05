@@ -135,4 +135,23 @@ export default {
   flex-wrap: wrap;
   margin-top: 20px;
 }
+@media screen and (max-width: 768px) {
+  .split{
+    display:flex;
+  }
+  .split.left {
+    padding: 20px;
+    width: 100%;
+    height: auto;
+  }
+  .split.right {
+    padding: 20px;
+    width: 100%;
+    height: auto;
+  }
+  .Story {
+    padding: 20px;
+  }
+  
+}
 </style>
