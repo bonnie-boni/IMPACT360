@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class='template-body'>
     <Header/>
     <router-view/>
     <Footer/>
@@ -11,6 +11,8 @@ import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
 </script>
 
-<style lang="scss" scoped>
-
+<style scoped>
+  .template-body{
+    overflow-x: hidden;
+  }
 </style>

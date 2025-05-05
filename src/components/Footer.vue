@@ -79,7 +79,7 @@ template{
   padding: 20px 0;
   text-align: center;
   font-family: sans-serif;
-
+  overflow: none;
 }
 
 .container {
@@ -189,7 +189,7 @@ h3{
   margin-top: 10px;
 }
 
-@media screen  and (max-width:360px){
+@media screen  and (max-width:650px){
   .footer-contacts{
     flex-direction: column;
   }
