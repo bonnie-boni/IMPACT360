@@ -26,7 +26,7 @@
         <!-- Right split content can go here -->
       </div>
     </div>
-    <div class="Story">
+    <!-- <div class="Story">
       <h1>Our Story</h1>
       <p>
         Founded in Kenya, Impact360 was created to bridge the gap between talent and opportunity across Africa. We believe innovation should be accessible to everyone — not just in major cities.
@@ -53,7 +53,7 @@
           </template>
         </ImpactCard>
       </div>
-    </div>
+    </div> -->
 
     <!-- Our Team Section -->
     <div class="team-section">
@@ -61,7 +61,7 @@
       <div class="team-container">
         <div class="team-card">
           <div class="team-image">
-            <img src="./assets/team1.jpg" alt="Team Member 1" />
+            <img src="C:\Users\ADMIN\OneDrive\Desktop\IMPACT360\IMPACT360\src\assets\Bg1.jpg" alt="Team Member 1" />
           </div>
           <div class="team-info">
             <h3>Jane Doe</h3>
@@ -71,7 +71,7 @@
         </div>
         <div class="team-card">
           <div class="team-image">
-            <img src="./assets/team2.jpg" alt="Team Member 2" />
+            <img src="C:\Users\ADMIN\OneDrive\Desktop\IMPACT360\IMPACT360\src\assets\Bg1.jpg" alt="Team Member 2" />
           </div>
           <div class="team-info">
             <h3>John Smith</h3>
@@ -81,7 +81,7 @@
         </div>
         <div class="team-card">
           <div class="team-image">
-            <img src="./assets/team3.jpg" alt="Team Member 3" />
+            <img src="C:\Users\ADMIN\OneDrive\Desktop\IMPACT360\IMPACT360\src\assets\Bg1.jpg" alt="Team Member 3" />
           </div>
           <div class="team-info">
             <h3>Mary Johnson</h3>
