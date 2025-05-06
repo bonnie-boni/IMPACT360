@@ -1,6 +1,7 @@
 <template>
- 
+
   <div class="hero">
+
     <div class="hero__overlay"></div>
     <div class="hero__content">
       <h1>Decentralizing Tech & Entrepreneurship</h1>
@@ -11,9 +12,10 @@
        <RouterLink to="/i3-launchpad" class="btn1"><button >Join I3LAUNCHPAD</button></RouterLink> 
        <RouterLink to="/events"><button class="btn2">View Events</button></RouterLink>
       </div>
+
     </div>
   </div>
-  
+
 
 
 </template>
@@ -39,16 +41,17 @@ export default {
   align-items: left;
   justify-content: left;
   text-align: left;
-  padding:0 40px;
+  padding: 40px;
 }
 
 .hero__overlay {
   position: absolute;
+  padding: 0 40px;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(52, 112, 234, 0.8); /* Blue overlay matching screenshot */
+  background-color: rgba(105, 143, 219, 0.8); /* Blue overlay matching screenshot */
   z-index: 1;
 }
 
@@ -63,7 +66,7 @@ export default {
 
 h1 {
    font-weight: 600;
-  margin-top: 100px; 
+  margin-top: 100px;
   margin-bottom: 20px;
   font-size: 4.0rem;
   margin-bottom: 20px;
@@ -90,7 +93,7 @@ p {
   border: none;
   /* background-color:black; */
   /* color:white; */
-  
+
 }
 .dtn button:hover {
   background-color: #3a41a5;
@@ -111,7 +114,7 @@ p {
   }
   h1 {
     font-size: 2.5rem;
-    margin-top: 50px; 
+    margin-top: 50px;
   }
   p {
     font-size: 1.2rem;
@@ -138,7 +141,7 @@ p {
   }
   h1 {
     font-size: 2rem;
-    margin-top: 50px; 
+    margin-top: 50px;
   }
   p {
     font-size: 1rem;
@@ -163,8 +166,8 @@ p {
   .btn1 {
     height: auto;
     width: auto;
-    
+
   }
-  
+
 }
 </style>

@@ -14,7 +14,7 @@
           <p class="event-date">{{ event.date }} • {{ event.location }}</p>
           <h3 class="event-title">{{ event.title }}</h3>
           <p class="event-description">{{ event.description }}</p>
-          
+
         <!-- This code will be used to create a button that will redirect the user to a link if it exists. If the link is undefined, it will show a disabled button. -->
           <button
             v-if="event.link"
@@ -23,7 +23,7 @@
            >
             Register Now
           </button>
-          
+
 
           <span v-else class="register-btn-placeholder">
             <!-- You can put text like "Registration Closed" or leave it empty -->
@@ -39,11 +39,11 @@
 </template>
 
 <script>
-import Bg1 from '@/assets/Bg1.jpg'
-import Bg2 from '@/assets/Bg2.jpg'
-import Bg4 from '@/assets/Bg4jpg.jpg'
-import router from '@/router'
+import { createClient } from '@supabase/supabase-js'
 
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 export default {
   name: 'Cards',
@@ -55,35 +55,21 @@ export default {
   },
   data() {
     return {
-      events: [
-        {
-          id: 1,
-          image: Bg1,
-          date: 'October 4, 2024',
-          location: 'Nakuru, Kenya',
-          link:"https://vabu.app/impact360",
-          title: 'Beyond Now: The Future With AI',
-          description:
-            'Where Africa’s top innovators tackle challenges and spark innovation.',
-        },
-        {
-          id: 2,
-          image: Bg2,
-          // date: 'April 2, 2024',
-          location: 'Nakuru, Kenya',
-          title: 'I3 Lanchpad',
-          description: 'Present your startup idea to top investors and win seed funding.',
-        },
-        {
-          id: 3,
-          image: Bg4,
-          // date: 'April 20, 2024',
-          link:undefined,
-          location: 'Africa',
-          title: 'Plan your Event with impact360',
-          description: 'Let us handle everything—venue, speakers, and logistics—for a seamless event.',
-        },
-      ],
+      events: [],
+    }
+  },
+  async mounted() {
+    const { data, error } = await supabase
+      .from('events')
+      .select('*')
+
+    if (error) {
+      console.error('Error fetching events:', error)
+    } else {
+      this.events = data.map(event => ({
+        ...event,
+        image: `/${event.image}` // Assuming images are in the public directory
+      }));
     }
   },
 }

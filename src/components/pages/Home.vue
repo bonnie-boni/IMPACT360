@@ -1,28 +1,40 @@
 <template>
   <div class="hero">
-    <div class="hero__overlay"></div>
-    <div class="hero__content">
-      <h1 id="text">Decentralizing Tech & Entrepreneurship</h1>
-      <p>
-        Empowering communities in africa through accessible tech education and <br />
-        entrepreneurship opportunities.Join us in building a more inclusive future
-      </p>
-      <div class="btn">
-       <RouterLink to="/i3-launchpad"><button >Join I3LAUNCHPAD</button></RouterLink> 
-       <RouterLink to="/events"><button >View Upcoming Events</button></RouterLink>
-      </div>
+    <div class="hero__overlay">
+        <div class="hero__content">
+            <h1 id="text">Decentralizing Tech & Entrepreneurship</h1>
+            <!-- <p>
+              Empowering communities in africa through accessible tech education and <br />
+              entrepreneurship opportunities.Join us in building a more inclusive future
+            </p> -->
+        </div>
+        <div class="btn">
+            <RouterLink to="/i3-launchpad"><button >Join I3LAUNCHPAD</button></RouterLink>
+            <RouterLink to="/events"><button >View Upcoming Events</button></RouterLink>
+        </div>
     </div>
     <!-- end of hero page -->
       <!-- Start of who we are section -->
   </div>
- 
+
+
+<!-- end of hero page -->
+ <Cards />
+ <!-- Start of who we are section -->
+
+
 </template>
 
 <script>
+import Cards from '@/components/Cards.vue'
 
 export default {
   name: 'HomePage',
-  
+  components: {
+    Cards
+  }
+ 
+
 }
 // const textEl=document.getElementById('text');
 // const text = 'Decentralizing Tech & Entrepreneurship';
@@ -45,7 +57,7 @@ export default {
   font-size: bold;
   letter-spacing: 1px;
   position: relative;
-  background-image: url('@/assets/Bg1.jpg');
+  background-image: url('/Bg1.jpg');
   background-size: cover;
   background-position: center;
   height: 100vh;
@@ -78,7 +90,7 @@ export default {
 
 h1 {
    font-weight: 600;
-  margin-top: 100px; 
+  margin-top: 100px;
   margin-bottom: 20px;
   font-size: 4.0rem;
   margin-bottom: 20px;
@@ -104,7 +116,7 @@ p {
   border: none;
   background-color:#2d1f38;
   color:white;
-  
+
 }
 .btn button:hover {
   background-color: #3a41a5;

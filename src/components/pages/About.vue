@@ -6,8 +6,7 @@
         <p>
           To democratize access to technology and entrepreneurship—resources and expertise that
           empower every community in Africa to innovate and thrive.
-        </p>
-        <p>
+          <br>
           We deliver this impact through curated event experiences designed to inspire, connect, and
           activate changemakers across the continent.
         </p>
@@ -23,7 +22,9 @@
         </p>
       </div>
       <div class="split right">
-        <!-- Right split content can go here -->
+
+
+
       </div>
     </div>
     <div class="Story">
@@ -111,63 +112,133 @@ export default {
   font-size: small;
   margin-top: 0%;
 }
+
 .hero__overlay {
   display: flex;
   width: 100%;
+
   height: 100%;
   position: relative;
   /* background-color: rgba(52, 112, 234, 0.8); */
   /* z-index: 1; */
+
 }
+
 .split {
   position: relative;
-  height: 100%;
-  width: 50%;
+  width: 100%; /* Full width on smaller screens */
   overflow: hidden;
+  height: 100vh;
+
 }
+
 .split.left {
+
+  width: 80%; /* Full width on smaller screens */
+  padding: 20px;
+  background-color: black;
+  color: white;
+  height: auto; /* Adjust height to content */
+}
+
+.split.left h1 {
+  font-size: 2rem; /* Adjust font size for smaller screens */
+  margin-bottom: 10px;
   padding: 60px 20px 0px 40px;
   left: 0;
   background: linear-gradient(to right, #0D2D56,#4B67BC);
   color: white; 
   height: 85vh;
 }
+
 .split.left p {
   margin: 0;
-  padding: 0px;
-  font-size: 16px;
-  line-height: 1.5;
+  padding: 0;
+  font-size: 1rem;
+  line-height: 1.4;
 }
+
 .split.right {
+
   padding: 60px 20px 0px 40px;
   right: 0;
   width: 50%;
   height: 85vh;
   background-image: url('@/assets/Bg7.jpg');
   background-size: cover;
+  min-height: 200px; /* Ensure a minimum height for the background image */
 }
+
 .Story {
   padding: 40px 200px;
   background-color: #EFEFEF;
   color: black;
   text-align: center;
+
 }
+
 .Story h1 {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
+  font-size: 2rem;
+  margin-bottom: 15px;
 }
+
 .Story p {
-  font-size: 15px;
-  line-height: 1.5;
-  margin-bottom: 20px;
+  padding: 0;
+  font-size: 1rem;
+  line-height: 1.4;
+  margin-bottom: 15px;
 }
+
 .cards-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
   flex-wrap: wrap;
-  margin-top: 20px;
+  margin-top: 15px;
+}
+
+/* Media query for larger screens */
+@media screen and (max-width: 780px) {
+
+  .hero__overlay {
+    flex-direction: column-reverse;
+  }
+
+  .split {
+    width: 50%; /* Restore 50% width on larger screens */
+  }
+
+  .split.left {
+    height: auto;
+    width: auto;
+  }
+
+  .split.left h1 {
+    font-size: 2rem;
+  }
+
+  .split.left p {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .split.right {
+    min-height: 50vh;
+    height: auto;
+  }
+
+  .Story {
+    text-align: center;
+  }
+
+  .Story h1 {
+    font-size: 2.5rem;
+  }
+
+  .Story p {
+    padding: 5%;
+  }
 }
 
 /* Team Section Styles */
