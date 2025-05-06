@@ -61,7 +61,7 @@
       <div class="team-container">
         <div class="team-card">
           <div class="team-image">
-            <img src="./assets/team1.jpg" alt="Team Member 1" />
+            <img src="../../assets/Bg1.jpg" alt="Team Member 1" />
           </div>
           <div class="team-info">
             <h3>Jane Doe</h3>
@@ -71,7 +71,7 @@
         </div>
         <div class="team-card">
           <div class="team-image">
-            <img src="./assets/team2.jpg" alt="Team Member 2" />
+            <img src="../../assets/Bg1.jpg" alt="Team Member 2" />
           </div>
           <div class="team-info">
             <h3>John Smith</h3>
@@ -81,7 +81,7 @@
         </div>
         <div class="team-card">
           <div class="team-image">
-            <img src="./assets/team3.jpg" alt="Team Member 3" />
+            <img src="../../assets/Bg1.jpg" alt="Team Member 3" />
           </div>
           <div class="team-info">
             <h3>Mary Johnson</h3>
@@ -184,7 +184,7 @@ export default {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 30px;
+  gap: 50px;
 }
 .team-card {
   position: relative;
@@ -199,10 +199,10 @@ export default {
   transform: scale(1.05);
 }
 .team-image img {
-  width: 100%;
-  height: 100%;
+  width: 200%;
+  height: 200%;
   object-fit: cover;
-  border-radius: 50%;
+ 
 }
 .team-info {
   position: absolute;
