@@ -13,7 +13,10 @@
             <RouterLink to="/events"><button >View Upcoming Events</button></RouterLink>
         </div>
     </div>
+    <!-- end of hero page -->
+      <!-- Start of who we are section -->
   </div>
+
 
 <!-- end of hero page -->
  <Cards />
@@ -30,6 +33,8 @@ export default {
   components: {
     Cards
   }
+ 
+
 }
 // const textEl=document.getElementById('text');
 // const text = 'Decentralizing Tech & Entrepreneurship';

@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { HomeView, AboutView } from '@/views'
+import { HomeView, AboutView,ContactView } from '@/views'
 import Admin from '@/components/pages/Admin.vue'
 import CreateEditEvent from '@/components/CreateEditEvent.vue'
 import Events from '@/components/Events.vue'
@@ -14,6 +14,7 @@ const routes = [
   { path: '/forgot-password', name: 'forgot-password', component: ForgotPass },
   { path: '/', name: 'home', component: HomeView },
   { path: '/about', name: 'about', component: AboutView },
+  { path: '/contact', name: 'contact', component: ContactView }
   {
     path: '/admin',name: 'admin',component: Admin,children: [
       { path: 'create-event', name: 'create-event', component: CreateEditEvent },
@@ -22,6 +23,7 @@ const routes = [
     ],
   },
   // { path: '/event-tickets', name: 'event-ticket', component: EventTicket }
+
 ]
 
 const router = createRouter({
