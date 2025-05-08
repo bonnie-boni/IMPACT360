@@ -1,131 +1,162 @@
-<!-- EventsView.vue - Main events management page -->
 <template>
-  <div class="events-view">
-    <div class="page-header">
-      <h1>Event Management</h1>
-      <router-link to="/admin/create-event" class="create-btn">
-        <i class="fas fa-plus"></i> Create New Event
-      </router-link>
-    </div>
-
-    <div class="search-filter-section">
-      <div class="search-box">
-        <i class="fas fa-search"></i>
-        <input
-          type="text"
-          placeholder="Search events..."
-          v-model="searchQuery"
-          @input="filterEvents"
-        />
+  <div class="admin-dashboard">
+    <!-- Dashboard Content -->
+    <div class="dashboard-content">
+      <!-- Statistics Cards -->
+      <div class="stats-cards">
+        <div class="stat-card" v-for="(stat, index) in statistics" :key="index">
+          <div class="stat-icon" :style="{ backgroundColor: stat.bgColor }">
+            <i :class="'fas ' + stat.icon"></i>
+          </div>
+          <div class="stat-info">
+            <h3 class="stat-value">{{ stat.value }}</h3>
+            <p class="stat-label">{{ stat.label }}</p>
+          </div>
+          <div class="stat-trend" :class="stat.trend">
+            <i :class="'fas fa-arrow-' + (stat.trend === 'up' ? 'up' : 'down')"></i>
+            <span>{{ stat.percentage }}%</span>
+          </div>
+        </div>
       </div>
-      <div class="filter-options">
-        <select v-model="statusFilter" @change="filterEvents">
-          <option value="all">All Events</option>
-          <option value="upcoming">Upcoming</option>
-          <option value="past">Past</option>
-          <option value="postponed">Postponed</option>
-        </select>
-        <button @click="sortEvents('date')" class="sort-btn">
-          Sort by Date
-          <i :class="sortDirection === 'asc' ? 'fas fa-arrow-up' : 'fas fa-arrow-down'"></i>
+
+      <!-- Charts Section -->
+      <div class="charts-section">
+        <div class="chart-card revenue-chart">
+          <div class="card-header">
+            <h3>Revenue Overview</h3>
+            <div class="dropdown">
+              <button class="dropdown-btn" @click="toggleRevenuePeriod">
+                {{ revenuePeriod }} <i class="fas fa-chevron-down"></i>
+              </button>
+              <div class="dropdown-menu" v-if="showRevenueDropdown">
+                <div class="dropdown-item" @click="setRevenuePeriod('This Week')">This Week</div>
+                <div class="dropdown-item" @click="setRevenuePeriod('This Month')">This Month</div>
+                <div class="dropdown-item" @click="setRevenuePeriod('This Year')">This Year</div>
+              </div>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas ref="revenueChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card ticket-chart">
+          <div class="card-header">
+            <h3>Ticket Sales</h3>
+            <div class="dropdown">
+              <button class="dropdown-btn" @click="toggleTicketPeriod">
+                {{ ticketPeriod }} <i class="fas fa-chevron-down"></i>
+              </button>
+              <div class="dropdown-menu" v-if="showTicketDropdown">
+                <div class="dropdown-item" @click="setTicketPeriod('Last 7 Days')">Last 7 Days</div>
+                <div class="dropdown-item" @click="setTicketPeriod('Last 30 Days')">Last 30 Days</div>
+                <div class="dropdown-item" @click="setTicketPeriod('Last Year')">Last Year</div>
+              </div>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas ref="ticketChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Events Table -->
+      <div class="recent-events">
+        <div class="card-header">
+          <h3>Recent Events</h3>
+          <button class="view-all-btn" @click="navigateTo('/admin/events')">
+            View All <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+        <div class="table-container">
+          <table class="events-table">
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Date</th>
+                <th>Location</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Sales</th>
+                <!-- <th>Actions</th> -->
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(event, index) in filteredEvents" :key="index">
+                <td class="event-info">
+                  <img :src="event.thumbnail || 'https://placehold.co/48x48'" alt="Event Thumbnail" class="event-thumb" />
+                  <div>
+                    <p class="event-title">{{ event.title }}</p>
+                    <p class="event-category">{{ event.category }}</p>
+                  </div>
+                </td>
+                <td>{{ formatDate(event.date) }}</td>
+                <td>{{ event.location }}</td>
+                <td>KSH {{ event.price }}</td>
+                <td>
+                  <span class="status-badge" :class="event.status.toLowerCase()">
+                    {{ event.status }}
+                  </span>
+                </td>
+                <td>
+                  <div class="sales-progress">
+                    <div class="progress-bar" :style="{ width: calculateSalesPercentage(event) + '%' }"></div>
+                    <span>{{ event.ticketsSold }}/{{ event.capacity }}</span>
+                  </div>
+                </td>
+                <!-- <td class="actions">
+                  <button class="action-btn edit" @click="editEvent(event.id)">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="action-btn view" @click="viewEvent(event.id)">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="action-btn delete" @click="confirmDelete(event.id)">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td> -->
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Quick Actions Section -->
+      <div class="quick-actions">
+        <button class="action-card" @click="navigateTo('/admin/events/create')">
+          <i class="fas fa-calendar-plus"></i>
+          <span>Create Event</span>
+        </button>
+        <button class="action-card" @click="navigateTo('/admin/reports')">
+          <i class="fas fa-chart-line"></i>
+          <span>View Reports</span>
+        </button>
+        <button class="action-card" @click="navigateTo('/admin/users')">
+          <i class="fas fa-users"></i>
+          <span>Manage Users</span>
+        </button>
+        <button class="action-card" @click="navigateTo('/admin/settings')">
+          <i class="fas fa-cog"></i>
+          <span>Settings</span>
         </button>
       </div>
     </div>
 
-    <!-- Events Table -->
-    <div class="events-table-container">
-      <table class="events-table" v-if="filteredEvents.length > 0">
-        <thead>
-          <tr>
-            <th>Thumbnail</th>
-            <th @click="sortEvents('title')">Event Title</th>
-            <th @click="sortEvents('date')">Event Date</th>
-            <th @click="sortEvents('price')">Ticket Price (KSH)</th>
-            <th>Tickets Sold</th>
-            <th>Revenue (KSH)</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="event in filteredEvents" :key="event.id" :class="{ 'postponed': event.isPostponed }">
-            <td>
-              <img :src="event.thumbnail" :alt="event.title" class="event-thumbnail" />
-            </td>
-            <td>{{ event.title }}</td>
-            <td>{{ formatDate(event.date) }}</td>
-            <td>{{ formatCurrency(event.price) }}</td>
-            <td>{{ event.ticketsSold }}</td>
-            <td>{{ formatCurrency(event.price * event.ticketsSold) }}</td>
-            <td>
-              <span :class="getStatusClass(event)">{{ getStatusText(event) }}</span>
-            </td>
-            <td class="actions-cell">
-              <router-link :to="`/admin/events/${event.id}`" class="action-btn view-btn">
-                <i class="fas fa-eye"></i>
-              </router-link>
-              <router-link :to="`/admin/events/${event.id}/edit`" class="action-btn edit-btn">
-                <i class="fas fa-edit"></i>
-              </router-link>
-              <button class="action-btn postpone-btn" @click="showPostponeModal(event)" :disabled="isPastEvent(event)">
-                <i class="fas fa-calendar-plus"></i>
-              </button>
-              <button class="action-btn delete-btn" @click="showDeleteModal(event)">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="no-events" v-else>
-        <i class="fas fa-calendar-times"></i>
-        <p>No events found matching your criteria</p>
-      </div>
-    </div>
-
-    <!-- Postpone Event Modal -->
-    <div class="modal" v-if="postponeModalVisible">
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" v-if="showDeleteModal">
       <div class="modal-content">
         <div class="modal-header">
-          <h2>Postpone Event</h2>
-          <button class="close-btn" @click="postponeModalVisible = false">×</button>
+          <h3>Confirm Delete</h3>
+          <button class="close-btn" @click="showDeleteModal = false">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
         <div class="modal-body">
-          <p>You are about to postpone: <strong>{{ selectedEvent?.title }}</strong></p>
-          <div class="form-group">
-            <label for="newDate">New Event Date:</label>
-            <input type="datetime-local" id="newDate" v-model="newEventDate" />
-          </div>
-          <div class="form-group">
-            <label for="postponeReason">Reason for Postponement:</label>
-            <textarea id="postponeReason" v-model="postponeReason" placeholder="Enter reason for postponement..."></textarea>
-          </div>
+          <p>Are you sure you want to delete this event? This action cannot be undone.</p>
         </div>
         <div class="modal-footer">
-          <button class="cancel-btn" @click="postponeModalVisible = false">Cancel</button>
-          <button class="postpone-confirm-btn" @click="postponeEvent">Confirm Postponement</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Delete Event Modal -->
-    <div class="modal" v-if="deleteModalVisible">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Delete Event</h2>
-          <button class="close-btn" @click="deleteModalVisible = false">×</button>
-        </div>
-        <div class="modal-body">
-          <div class="warning-icon">
-            <i class="fas fa-exclamation-triangle"></i>
-          </div>
-          <p>Are you sure you want to delete the event: <strong>{{ selectedEvent?.title }}</strong>?</p>
-          <p class="warning-text">This action cannot be undone. All data related to this event including ticket sales will be permanently removed.</p>
-        </div>
-        <div class="modal-footer">
-          <button class="cancel-btn" @click="deleteModalVisible = false">Cancel</button>
-          <button class="delete-confirm-btn" @click="deleteEvent">Confirm Deletion</button>
+          <button class="cancel-btn" @click="showDeleteModal = false">Cancel</button>
+          <button class="delete-btn" @click="deleteEvent">Delete</button>
         </div>
       </div>
     </div>
@@ -133,125 +164,216 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue';
+import { ref, reactive, computed, onMounted, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import Chart from 'chart.js/auto';
 
 export default {
-  name: 'EventsView',
+  name: 'AdminDashboard',
   setup() {
-    // Data
-    const events = ref([]);
+    const router = useRouter();
     const searchQuery = ref('');
-    const statusFilter = ref('all');
-    const sortKey = ref('date');
-    const sortDirection = ref('asc');
-    const postponeModalVisible = ref(false);
-    const deleteModalVisible = ref(false);
-    const selectedEvent = ref(null);
-    const newEventDate = ref('');
-    const postponeReason = ref('');
+    const unreadNotifications = ref(5);
+    const showDeleteModal = ref(false);
+    const eventToDelete = ref(null);
+    const revenuePeriod = ref('This Month');
+    const ticketPeriod = ref('Last 7 Days');
+    const showRevenueDropdown = ref(false);
+    const showTicketDropdown = ref(false);
 
-    // Fetch events (mock data for now)
+    // Chart references
+    const revenueChart = ref(null);
+    const ticketChart = ref(null);
+    let revenueChartInstance = null;
+    let ticketChartInstance = null;
+
+    // Statistics cards data
+    const statistics = [
+      {
+        label: 'Total Revenue',
+        value: 'KSH 845,000',
+        icon: 'fa-dollar-sign',
+        bgColor: '#4CAF50',
+        trend: 'up',
+        percentage: 12.5
+      },
+      {
+        label: 'Ticket Sales',
+        value: '1,253',
+        icon: 'fa-ticket-alt',
+        bgColor: '#2196F3',
+        trend: 'up',
+        percentage: 8.3
+      },
+      {
+        label: 'Active Events',
+        value: '24',
+        icon: 'fa-calendar-check',
+        bgColor: '#FF9800',
+        trend: 'up',
+        percentage: 5.1
+      },
+      {
+        label: 'New Users',
+        value: '321',
+        icon: 'fa-user-plus',
+        bgColor: '#9C27B0',
+        trend: 'down',
+        percentage: 2.8
+      }
+    ];
+
+    // Sample data for charts
+    const revenueData = ref({
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      datasets: [{
+        label: 'Revenue',
+        data: [30000, 45000, 35000, 50000, 70000, 60000, 80000, 75000, 65000, 90000, 85000, 95000],
+        backgroundColor: '#3498db',
+        borderColor: '#3498db',
+        borderWidth: 2,
+        fill: false
+      }]
+    });
+
+    const ticketCategories = [
+      { label: 'Conference', percentage: 45, color: '#2196F3' },
+      { label: 'Workshop', percentage: 25, color: '#4CAF50' },
+      { label: 'Concert', percentage: 20, color: '#FF9800' },
+      { label: 'Exhibition', percentage: 10, color: '#9C27B0' }
+    ];
+
+    // Sample recent events data
+    const recentEvents = ref([]);
+
+    // Computed property for filtered events
+    const filteredEvents = computed(() => {
+      if (!searchQuery.value) return recentEvents.value;
+      return recentEvents.value.filter(event =>
+        event.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        event.category.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        event.location.toLowerCase().includes(searchQuery.value.toLowerCase())
+      );
+    });
+
     onMounted(() => {
-      // This would typically be an API call
-      events.value = [
+      fetchRecentEvents();
+      initializeCharts();
+    });
+
+    const fetchRecentEvents = () => {
+      recentEvents.value = [
         {
           id: 1,
           title: 'Tech Conference 2025',
-          thumbnail: '/api/placeholder/100/80',
-          description: 'Annual technology conference featuring the latest innovations',
-          date: '2025-07-15T09:00:00',
-          price: 5000,
-          ticketsSold: 120,
-          isPostponed: false,
-          originalDate: null
+          category: 'Conference',
+          date: '2025-05-15T09:00',
+          location: 'Nairobi Convention Center',
+          price: 2500,
+          status: 'Upcoming',
+          ticketsSold: 420,
+          capacity: 500,
+          thumbnail: null
         },
         {
           id: 2,
-          title: 'Music Festival',
-          thumbnail: '/api/placeholder/100/80',
-          description: 'A vibrant celebration of local music talents',
-          date: '2025-06-20T18:00:00',
-          price: 2500,
-          ticketsSold: 350,
-          isPostponed: true,
-          originalDate: '2025-05-20T18:00:00'
+          title: 'Web Development Workshop',
+          category: 'Workshop',
+          date: '2025-05-10T14:00',
+          location: 'iHub Nairobi',
+          price: 1200,
+          status: 'Sold Out',
+          ticketsSold: 50,
+          capacity: 50,
+          thumbnail: null
         },
         {
           id: 3,
-          title: 'Entrepreneurship Workshop',
-          thumbnail: '/api/placeholder/100/80',
-          description: 'Learn key skills to launch your startup',
-          date: '2025-05-10T10:00:00',
-          price: 1000,
-          ticketsSold: 75,
-          isPostponed: false,
-          originalDate: null
+          title: 'Marketing Masterclass',
+          category: 'Seminar',
+          date: '2025-06-05T10:00',
+          location: 'Kenyatta University',
+          price: 3000,
+          status: 'Upcoming',
+          ticketsSold: 95,
+          capacity: 200,
+          thumbnail: null
         },
         {
           id: 4,
-          title: 'Charity Gala',
-          thumbnail: '/api/placeholder/100/80',
-          description: 'Annual fundraising event for local charities',
-          date: '2024-11-10T19:00:00',
-          price: 10000,
-          ticketsSold: 200,
-          isPostponed: false,
-          originalDate: null
+          title: 'Jazz Night Live',
+          category: 'Concert',
+          date: '2025-05-20T19:00',
+          location: 'Carnivore Grounds',
+          price: 1500,
+          status: 'Postponed',
+          ticketsSold: 320,
+          capacity: 800,
+          thumbnail: null
+        },
+        {
+          id: 5,
+          title: 'Art Exhibition',
+          category: 'Exhibition',
+          date: '2025-05-12T10:00',
+          location: 'National Museum',
+          price: 500,
+          status: 'Upcoming',
+          ticketsSold: 125,
+          capacity: 300,
+          thumbnail: null
         }
       ];
-    });
-
-    // Filter events based on search and status
-    const filteredEvents = computed(() => {
-      return events.value.filter(event => {
-        // Search filter
-        const matchesSearch = event.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                             event.description.toLowerCase().includes(searchQuery.value.toLowerCase());
-
-        // Status filter
-        const eventDate = new Date(event.date);
-        const today = new Date();
-        const isPast = eventDate < today;
-
-        if (statusFilter.value === 'upcoming' && (isPast || event.isPostponed)) return false;
-        if (statusFilter.value === 'past' && !isPast) return false;
-        if (statusFilter.value === 'postponed' && !event.isPostponed) return false;
-
-        return matchesSearch;
-      }).sort((a, b) => {
-        // Apply sorting
-        let valA, valB;
-
-        if (sortKey.value === 'date') {
-          valA = new Date(a.date).getTime();
-          valB = new Date(b.date).getTime();
-        } else if (sortKey.value === 'price') {
-          valA = a.price;
-          valB = b.price;
-        } else {
-          valA = a[sortKey.value].toLowerCase();
-          valB = b[sortKey.value].toLowerCase();
-        }
-
-        if (sortDirection.value === 'asc') {
-          return valA > valB ? 1 : -1;
-        } else {
-          return valA < valB ? 1 : -1;
-        }
-      });
-    });
-
-    // Methods
-    const filterEvents = () => {
-      // Filtering happens automatically via computed property
     };
 
-    const sortEvents = (key) => {
-      if (sortKey.value === key) {
-        sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
-      } else {
-        sortKey.value = key;
-        sortDirection.value = 'asc';
+    const initializeCharts = () => {
+      if (revenueChart.value) {
+        revenueChartInstance = new Chart(revenueChart.value, {
+          type: 'line',
+          data: revenueData.value,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Revenue (KSH)'
+                }
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: 'Month'
+                }
+              }
+            }
+          }
+        });
+      }
+
+      if (ticketChart.value) {
+        ticketChartInstance = new Chart(ticketChart.value, {
+          type: 'doughnut',
+          data: {
+            labels: ticketCategories.map(item => item.label),
+            datasets: [{
+              data: ticketCategories.map(item => item.percentage),
+              backgroundColor: ticketCategories.map(item => item.color),
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'right'
+              }
+            }
+          }
+        });
       }
     };
 
@@ -260,243 +382,409 @@ export default {
       return date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+        day: 'numeric'
       });
     };
 
-    const formatCurrency = (amount) => {
-      return new Intl.NumberFormat('en-KE', {
-        style: 'currency',
-        currency: 'KES',
-        currencyDisplay: 'narrowSymbol'
-      }).format(amount);
+    const calculateSalesPercentage = (event) => {
+      if (!event.capacity) return 0;
+      return Math.min(Math.round((event.ticketsSold / event.capacity) * 100), 100);
     };
 
-    const isPastEvent = (event) => {
-      return new Date(event.date) < new Date();
+    const navigateTo = (route) => {
+      router.push(route);
     };
 
-    const getStatusClass = (event) => {
-      if (event.isPostponed) return 'status-postponed';
-      return isPastEvent(event) ? 'status-past' : 'status-upcoming';
+    const editEvent = (id) => {
+      router.push(`/admin/events/edit/${id}`);
     };
 
-    const getStatusText = (event) => {
-      if (event.isPostponed) return 'Postponed';
-      return isPastEvent(event) ? 'Past' : 'Upcoming';
+    const viewEvent = (id) => {
+      router.push(`/admin/events/${id}`);
     };
 
-    const showPostponeModal = (event) => {
-      selectedEvent.value = event;
-      newEventDate.value = event.date.substring(0, 16); // Format for datetime-local input
-      postponeReason.value = '';
-      postponeModalVisible.value = true;
-    };
-
-    const showDeleteModal = (event) => {
-      selectedEvent.value = event;
-      deleteModalVisible.value = true;
-    };
-
-    const postponeEvent = () => {
-      if (!newEventDate.value) {
-        alert('Please select a new date for the event');
-        return;
-      }
-
-      // Find and update the event
-      const eventToUpdate = events.value.find(e => e.id === selectedEvent.value.id);
-      if (eventToUpdate) {
-        if (!eventToUpdate.isPostponed) {
-          eventToUpdate.originalDate = eventToUpdate.date;
-        }
-        eventToUpdate.date = newEventDate.value;
-        eventToUpdate.isPostponed = true;
-
-        // Here you would typically save to API
-        console.log('Event postponed:', eventToUpdate);
-        console.log('Reason:', postponeReason.value);
-
-        // Close modal
-        postponeModalVisible.value = false;
-      }
+    const confirmDelete = (id) => {
+      eventToDelete.value = id;
+      showDeleteModal.value = true;
     };
 
     const deleteEvent = () => {
-      // Remove the event
-      events.value = events.value.filter(e => e.id !== selectedEvent.value.id);
+      recentEvents.value = recentEvents.value.filter(event => event.id !== eventToDelete.value);
+      showDeleteModal.value = false;
+      eventToDelete.value = null;
+    };
 
-      // Here you would typically call API to delete
-      console.log('Event deleted:', selectedEvent.value);
+    const toggleNotifications = () => {
+      unreadNotifications.value = 0;
+      // Implement notification view logic here
+    };
 
-      // Close modal
-      deleteModalVisible.value = false;
+    const searchEvents = () => {
+      // Triggered by search input
+    };
+
+    const toggleRevenuePeriod = () => {
+      showRevenueDropdown.value = !showRevenueDropdown.value;
+    };
+
+    const toggleTicketPeriod = () => {
+      showTicketDropdown.value = !showTicketDropdown.value;
+    };
+
+    const setRevenuePeriod = (period) => {
+      revenuePeriod.value = period;
+      showRevenueDropdown.value = false;
+      updateRevenueData(period);
+    };
+
+    const setTicketPeriod = (period) => {
+      ticketPeriod.value = period;
+      showTicketDropdown.value = false;
+      updateTicketData(period);
+    };
+
+    const updateRevenueData = (period) => {
+      const dataMap = {
+        'This Week': [10000, 15000, 12000, 18000, 20000, 17000, 22000],
+        'This Month': [30000, 45000, 35000, 50000, 70000, 60000, 80000, 75000, 65000, 90000, 85000, 95000],
+        'This Year': [250000, 300000, 280000, 320000, 350000, 330000, 400000, 380000, 360000, 420000, 400000, 450000]
+      };
+      revenueData.value.datasets[0].data = dataMap[period] || dataMap['This Month'];
+      if (revenueChartInstance) {
+        revenueChartInstance.update();
+      }
+    };
+
+    const updateTicketData = (period) => {
+      const dataMap = {
+        'Last 7 Days': [45, 25, 20, 10],
+        'Last 30 Days': [40, 30, 20, 10],
+        'Last Year': [50, 20, 20, 10]
+      };
+      ticketChartInstance.data.datasets[0].data = dataMap[period] || dataMap['Last 7 Days'];
+      ticketChartInstance.update();
     };
 
     return {
-      events,
       searchQuery,
-      statusFilter,
-      sortKey,
-      sortDirection,
+      unreadNotifications,
+      statistics,
+      revenueData,
+      ticketCategories,
+      recentEvents,
       filteredEvents,
-      postponeModalVisible,
-      deleteModalVisible,
-      selectedEvent,
-      newEventDate,
-      postponeReason,
-      filterEvents,
-      sortEvents,
-      formatDate,
-      formatCurrency,
-      getStatusClass,
-      getStatusText,
-      isPastEvent,
-      showPostponeModal,
       showDeleteModal,
-      postponeEvent,
-      deleteEvent
+      revenuePeriod,
+      ticketPeriod,
+      showRevenueDropdown,
+      showTicketDropdown,
+      revenueChart,
+      ticketChart,
+      navigateTo,
+      formatDate,
+      calculateSalesPercentage,
+      editEvent,
+      viewEvent,
+      confirmDelete,
+      deleteEvent,
+      toggleNotifications,
+      searchEvents,
+      toggleRevenuePeriod,
+      toggleTicketPeriod,
+      setRevenuePeriod,
+      setTicketPeriod
     };
   }
-};
+}
 </script>
 
 <style scoped>
-.events-view {
-  padding: 10px;
+/* Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-.page-header {
+.admin-dashboard {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+.dashboard-content{
+  width: 100%;
+}
+
+/* Stats Cards */
+.stats-cards {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-auto-flow: row wrap;
+  gap: 20px;
+  margin-bottom: 30px;
 }
 
-.page-header h1 {
-  font-size: 24px;
-  color: #2c3e50;
-}
-
-.create-btn {
-  background-color: #2ecc71;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+.stat-card {
+  background-color: white;
+  width: 30%;
+  border-radius: 12px;
+  padding: 20px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
 }
 
-.create-btn:hover {
-  background-color: #27ae60;
+.stat-card:hover {
   transform: translateY(-2px);
 }
 
-.search-filter-section {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.search-box {
+.stat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 8px 15px;
-  width: 300px;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  margin-right: 15px;
 }
 
-.search-box i {
-  color: #95a5a6;
-  margin-right: 10px;
-}
-
-.search-box input {
-  border: none;
-  outline: none;
+.stat-info {
   flex: 1;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 5px;
+  color: #1a202c;
+}
+
+
+.stat-label {
   font-size: 14px;
+  color: #718096;
+  font-weight: 500;
 }
 
-.filter-options {
-  display: flex;
-  gap: 10px;
-}
-
-.filter-options select {
-  padding: 8px 15px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: white;
-  outline: none;
-}
-
-.sort-btn {
+.stat-trend {
   display: flex;
   align-items: center;
   gap: 5px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.stat-trend.up {
+  color: #48bb78;
+}
+
+.stat-trend.down {
+  color: #e53e3e;
+}
+
+/* Charts Section */
+.charts-section {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.chart-card {
+  width: 100%;
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.card-header h3 {
+  font-size: 20px;
+  color: #1a202c;
+  font-weight: 600;
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #edf2f7;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
   padding: 8px 15px;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  font-size: 14px;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.sort-btn:hover {
-  background-color: #f5f5f5;
+.dropdown-btn:hover {
+  background-color: #e2e8f0;
 }
 
-.events-table-container {
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
   background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-top: 8px;
+  min-width: 150px;
+  z-index: 1000;
+}
+
+.dropdown-item {
+  padding: 10px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f7fafc;
+}
+
+.chart-container {
+  height: 300px;
+}
+
+/* Recent Events Table */
+.recent-events {
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.view-all-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: #3498db;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.view-all-btn:hover {
+  color: #2b6cb0;
+}
+
+.table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .events-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 .events-table th {
-  background-color: #f8f9fa;
   text-align: left;
   padding: 15px;
+  border-bottom: 2px solid #edf2f7;
+  color: #718096;
   font-weight: 600;
-  color: #2c3e50;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.events-table th:hover {
-  background-color: #eaeaea;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
 .events-table td {
   padding: 15px;
-  border-top: 1px solid #eaeaea;
-  vertical-align: middle;
+  border-bottom: 1px solid #edf2f7;
+  color: #2d3748;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
-.event-thumbnail {
-  width: 100px;
-  height: 80px;
+.event-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.event-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
   object-fit: cover;
-  border-radius: 5px;
 }
 
-.actions-cell {
+.event-title {
+  font-weight: 600;
+  margin-bottom: 3px;
+  color: #2d3748;
+}
+
+.event-category {
+  font-size: 12px;
+  color: #718096;
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status-badge.upcoming {
+  background-color: #e3f2fd;
+  color: #3182ce;
+}
+
+.status-badge.sold {
+  background-color: #e8f5e9;
+  color: #38a169;
+}
+
+.status-badge.postponed {
+  background-color: #fff3e0;
+  color: #dd6b20;
+}
+
+.sales-progress {
+  position: relative;
+
+  width: 120px;
+  height: 4px;
+  background-color: #edf2f7;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+.progress-bar {
+  position: absolute;
+  height: 100%;
+  background-color: #3498db;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.actions {
   display: flex;
   gap: 8px;
 }
@@ -504,94 +792,66 @@ export default {
 .action-btn {
   width: 36px;
   height: 36px;
+  border-radius: 8px;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
   color: white;
-  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.view-btn {
+.action-btn:hover {
+  filter: brightness(90%);
+}
+
+.action-btn.edit {
   background-color: #3498db;
 }
 
-.view-btn:hover {
-  background-color: #2980b9;
+.action-btn.view {
+  background-color: #48bb78;
 }
 
-.edit-btn {
-  background-color: #f39c12;
+.action-btn.delete {
+  background-color: #e53e3e;
 }
 
-.edit-btn:hover {
-  background-color: #d35400;
+/* Quick Actions Section */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
 }
 
-.postpone-btn {
-  background-color: #e74c3c;
-}
-
-.postpone-btn:hover {
-  background-color: #c0392b;
-}
-
-.delete-btn {
-  background-color: #e74c3c;
-}
-
-.delete-btn:hover {
-  background-color: #c0392b;
-}
-
-.action-btn:disabled {
-  background-color: #95a5a6;
-  cursor: not-allowed;
-}
-
-.status-upcoming {
-  background-color: #2ecc71;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-}
-
-.status-past {
-  background-color: #95a5a6;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-}
-
-.status-postponed {
-  background-color: #e74c3c;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-}
-
-.postponed {
-  background-color: rgba(231, 76, 60, 0.1);
-}
-
-.no-events {
+.action-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 50px;
-  color: #95a5a6;
+  gap: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.no-events i {
-  font-size: 50px;
-  margin-bottom: 15px;
+.action-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.15);
+}
+
+.action-card i {
+  font-size: 24px;
+  color: #3498db;
+}
+
+.action-card span {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2d3748;
 }
 
 /* Modal Styles */
@@ -599,21 +859,20 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 2000;
 }
 
 .modal-content {
   background-color: white;
-  border-radius: 8px;
-  width: 500px;
+  border-radius: 12px;
+  width: 400px;
   max-width: 90%;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .modal-header {
@@ -621,108 +880,350 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 15px 20px;
-  border-bottom: 1px solid #eaeaea;
+  border-bottom: 1px solid #edf2f7;
 }
 
-.modal-header h2 {
+.modal-header h3 {
   font-size: 18px;
-  color: #2c3e50;
+  font-weight: 600;
+  color: #2d3748;
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 16px;
   cursor: pointer;
-  color: #95a5a6;
+  color: #718096;
 }
 
 .modal-body {
   padding: 20px;
 }
 
-.warning-icon {
-  display: flex;
-  justify-content: center;
-  font-size: 50px;
-  color: #e74c3c;
-  margin-bottom: 20px;
-}
-
-.warning-text {
-  color: #e74c3c;
-  margin-top: 10px;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 500;
-}
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+.modal-body p {
   font-size: 14px;
-}
-
-textarea {
-  min-height: 100px;
-  resize: vertical;
+  color: #4a5568;
+  line-height: 1.5;
 }
 
 .modal-footer {
+  padding: 15px 20px;
+  border-top: 1px solid #edf2f7;
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  padding: 15px 20px;
-  border-top: 1px solid #eaeaea;
+}
+
+.cancel-btn, .delete-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .cancel-btn {
-  padding: 10px 20px;
-  background-color: #f5f7fa;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  cursor: pointer;
+  background-color: #edf2f7;
+  color: #4a5568;
+  border: none;
 }
 
-.postpone-confirm-btn,
-.delete-confirm-btn {
-  padding: 10px 20px;
-  background-color: #e74c3c;
+.cancel-btn:hover {
+  background-color: #e2e8f0;
+}
+
+.delete-btn {
+  background-color: #e53e3e;
   color: white;
   border: none;
-  border-radius: 5px;
-  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background-color: #c53030;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .charts-section {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .stats-cards {
+    flex-direction: column;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 15px;
+  }
+  .stat-card{
+    width: 55%;
+  }
+
+  .quick-actions {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+  }
+
+  .chart-container {
+    height: 250px;
+  }
 }
 
 @media (max-width: 768px) {
-  .search-filter-section {
-    flex-direction: column;
+  .dashboard-content {
+    padding: 15px;
   }
 
-  .search-box {
-    width: 100%;
+  .stats-cards {
+    grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
+    gap: 12px;
   }
 
-  .events-table {
-    display: block;
-    overflow-x: auto;
+  .quick-actions {
+    grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
+    gap: 12px;
   }
 
-  .page-header {
-    flex-direction: column;
+  .action-card {
+    padding: 15px;
+    min-height: 60px;
+  }
+
+  .action-card i {
+    font-size: 20px;
+  }
+
+  .action-card span {
+    font-size: 14px;
+  }
+
+  .recent-events {
+    padding: 15px;
+  }
+
+  .card-header h3 {
+    font-size: 18px;
+  }
+
+  .view-all-btn {
+    font-size: 13px;
+  }
+
+  .events-table th,
+  .events-table td {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .event-thumb {
+    width: 40px;
+    height: 40px;
+  }
+
+  .event-title {
+    font-size: 14px;
+  }
+
+  .event-category {
+    font-size: 11px;
+  }
+
+  .sales-progress {
+    width: 100px;
+  }
+
+  .action-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  /* Hide less critical columns on small screens */
+  .events-table th:nth-child(3), /* Location */
+  .events-table td:nth-child(3),
+  .events-table th:nth-child(4), /* Price */
+  .events-table td:nth-child(4),
+  .events-table th:nth-child(7), /* Actions */
+  .events-table td:nth-child(7) {
+    display: none;
+  }
+
+  .modal-content {
+    width: 90%;
+    max-width: 320px;
+  }
+
+  .modal-header {
+    padding: 12px 15px;
+  }
+
+  .modal-header h3 {
+    font-size: 16px;
+  }
+
+  .modal-body {
+    padding: 15px;
+  }
+
+  .modal-body p {
+    font-size: 13px;
+  }
+
+  .modal-footer {
+    padding: 12px 15px;
+  }
+
+  .cancel-btn, .delete-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-content {
+    padding: 10px;
+  }
+
+  .stats-cards {
+    grid-template-columns: 1fr;
     gap: 10px;
-    align-items: flex-start;
+  }
+
+  .stat-card {
+    padding: 15px;
+  }
+
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    margin-right: 10px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+
+  .stat-label {
+    font-size: 13px;
+  }
+
+  .stat-trend {
+    font-size: 12px;
+  }
+
+  .charts-section {
+    gap: 12px;
+  }
+
+  .chart-card {
+    padding: 15px;
+  }
+
+  .card-header h3 {
+    font-size: 16px;
+  }
+
+  .dropdown-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .dropdown-menu {
+    min-width: 120px;
+  }
+
+  .dropdown-item {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .chart-container {
+    height: 200px;
+  }
+
+  .recent-events {
+    padding: 10px;
+  }
+
+  .events-table th,
+  .events-table td {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .event-info {
+    gap: 8px;
+  }
+
+  .event-thumb {
+    width: 36px;
+    height: 36px;
+  }
+
+  .event-title {
+    font-size: 13px;
+  }
+
+  .event-category {
+    font-size: 10px;
+  }
+
+  .status-badge {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  .sales-progress {
+    width: 80px;
+    height: 6px;
+  }
+
+  .quick-actions {
+    gap: 10px;
+  }
+
+  .action-card {
+    padding: 12px;
+    min-height: 50px;
+  }
+
+  .action-card i {
+    font-size: 18px;
+  }
+
+  .action-card span {
+    font-size: 13px;
+  }
+
+  .modal-content {
+    max-width: 280px;
+  }
+
+  .modal-header {
+    padding: 10px 12px;
+  }
+
+  .modal-header h3 {
+    font-size: 14px;
+  }
+
+  .modal-body {
+    padding: 12px;
+  }
+
+  .modal-body p {
+    font-size: 12px;
+  }
+
+  .modal-footer {
+    padding: 10px 12px;
+  }
+
+  .cancel-btn, .delete-btn {
+    padding: 5px 10px;
+    font-size: 12px;
   }
 }
 </style>

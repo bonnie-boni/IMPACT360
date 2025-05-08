@@ -8,30 +8,27 @@
 
     <!-- Events List -->
     <div class="events-container">
-      <div v-for="(event, index) in events" :key="index" class="event-card">
-        <img :src="event.image" alt="Event Image" class="event-image" />
+      <div v-for="(event, index) in events.slice(0, 3)" :key="index" class="event-card">
+        <img
+          :src="event.thumbnail || '/images/default-event.jpg'"
+          :alt="event.title"
+          class="event-thumbnail"
+          @error="handleImageError($event, index)"
+        />
         <div class="event-details">
-          <p class="event-date">{{ event.date }} • {{ event.location }}</p>
+          <p class="event-date">{{ formatDate(event.date) }} • {{ event.location }}</p>
           <h3 class="event-title">{{ event.title }}</h3>
-          <p class="event-description">{{ event.description }}</p>
-
-        <!-- This code will be used to create a button that will redirect the user to a link if it exists. If the link is undefined, it will show a disabled button. -->
+          <p class="event-description">{{ truncateDescription(event.description, 100) }}</p>
           <button
             v-if="event.link"
             class="register-btn"
             @click="goToLink(event.link)"
-           >
+          >
             Register Now
           </button>
-
-
           <span v-else class="register-btn-placeholder">
-            <!-- You can put text like "Registration Closed" or leave it empty -->
-            <!-- Or style it like a disabled button -->
-             <button class="register-btn" disabled>Register Now</button>
+            <button class="register-btn disabled" disabled>Registration Closed</button>
           </span>
-
-
         </div>
       </div>
     </div>
@@ -39,118 +36,200 @@
 </template>
 
 <script>
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
-const supabase = createClient(supabaseUrl, supabaseKey)
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default {
   name: 'Cards',
   methods: {
     goToLink(url) {
-      // Since v-if ensures the link exists here, we just open it
       window.open(url, '_blank');
-    }
+    },
+    handleImageError(event, index) {
+      console.error(`Failed to load image for event ${index}: ${this.events[index].thumbnail}`);
+      this.events[index].thumbnail = '/images/default-event.jpg';
+    },
+    formatDate(dateString) {
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString('en-US', options);
+    },
+    truncateDescription(text, maxLength) {
+      if (text.length <= maxLength) return text;
+      return text.substring(0, maxLength) + '...';
+    },
   },
   data() {
     return {
       events: [],
-    }
+    };
   },
   async mounted() {
     const { data, error } = await supabase
       .from('events')
       .select('*')
+      .order('date', { ascending: false })
+      .limit(3);
 
     if (error) {
-      console.error('Error fetching events:', error)
+      console.error('Error fetching events:', error);
     } else {
-      this.events = data.map(event => ({
-        ...event,
-        image: `/${event.image}` // Assuming images are in the public directory
-      }));
+      this.events = data;
+      console.log('Event thumbnails:', this.events.map(e => e.thumbnail));
     }
   },
-}
+};
 </script>
 
 <style scoped>
 .Cards {
-  font-family: sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   text-align: center;
-  padding: 40px;
-  background-color: #fff;
+  padding: 60px 20px;
+  background-color: #f8fafc;
 }
 
 .header h2 {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 10px;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 12px;
 }
 
 .header p {
-  color: #666;
-  margin-bottom: 30px;
+  font-size: 1.125rem;
+  color: #64748b;
+  margin-bottom: 40px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .events-container {
   display: flex;
   justify-content: center;
-  gap: 60px;
+  gap: 24px;
   flex-wrap: wrap;
-  /* border: 2px solid red; */
 }
 
 .event-card {
-  background: #f9f9f9;
-  border-radius: 8px;
+  background: #ffffff;
+  border-radius: 12px;
   overflow: hidden;
-  width: 300px;
+  width: 320px;
   text-align: left;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
-.event-image {
+.event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.event-thumbnail {
   width: 100%;
-  height: 180px;
+  height: 200px;
   object-fit: cover;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
 }
 
 .event-details {
-  padding: 0px 10px;
+  padding: 16px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .event-date {
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 5px;
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-bottom: 8px;
+  font-weight: 500;
 }
 
 .event-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 5px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 8px;
+  line-height: 1.4;
 }
 
 .event-description {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 15px;
+  font-size: 0.9375rem;
+  color: #475569;
+  margin-bottom: 16px;
+  line-height: 1.5;
+  flex-grow: 1;
 }
 
 .register-btn {
-  background: black;
-  color: white;
+  background: #0d6efd;
+  color: #ffffff;
   padding: 10px;
   border: none;
+  border-radius: 6px;
+  font-size: 0.9375rem;
+  font-weight: 500;
   cursor: pointer;
   width: 100%;
-  border-radius: 4px;
-  font-size: 14px;
+  transition: background-color 0.3s ease;
 }
 
 .register-btn:hover {
-  background: #333;
+  background: #0b5ed7;
+}
+
+.register-btn.disabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .Cards {
+    padding: 40px 16px;
+  }
+
+  .header h2 {
+    font-size: 1.5rem;
+  }
+
+  .header p {
+    font-size: 1rem;
+  }
+
+  .event-card {
+    width: 100%;
+    max-width: 340px;
+  }
+
+  .event-thumbnail {
+    height: 180px;
+  }
+
+  .event-title {
+    font-size: 1.125rem;
+  }
+
+  .event-description {
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .event-card {
+    width: 100%;
+  }
+
+  .event-thumbnail {
+    height: 160px;
+  }
 }
 </style>

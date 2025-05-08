@@ -1,54 +1,35 @@
 <template>
   <div class="hero">
     <div class="hero__overlay">
-        <div class="hero__content">
-            <h1 id="text">Decentralizing Tech & Entrepreneurship</h1>
-            <!-- <p>
+      <div class="hero__content">
+        <h1 id="text">Decentralizing Tech & Entrepreneurship</h1>
+        <!-- <p>
               Empowering communities in africa through accessible tech education and <br />
               entrepreneurship opportunities.Join us in building a more inclusive future
             </p> -->
-        </div>
-        <div class="btn">
-            <RouterLink to="/i3-launchpad"><button >Join I3LAUNCHPAD</button></RouterLink>
-            <RouterLink to="/events"><button >View Upcoming Events</button></RouterLink>
-        </div>
+      </div>
+      <div class="btn">
+        <RouterLink to="/i3-launchpad"><button>Join I3LAUNCHPAD</button></RouterLink>
+        <RouterLink to="/events"><button>View Upcoming Events</button></RouterLink>
+      </div>
     </div>
     <!-- end of hero page -->
-      <!-- Start of who we are section -->
+    <!-- Start of who we are section -->
   </div>
 
-
-<!-- end of hero page -->
- <Cards />
- <!-- Start of who we are section -->
-
+  <Cards />
 
 </template>
 
 <script>
-import Cards from '@/components/Cards.vue'
+import Cards from '@/components/Cards.vue';
 
 export default {
   name: 'HomePage',
   components: {
-    Cards
+    Cards,
   }
- 
-
 }
-// const textEl=document.getElementById('text');
-// const text = 'Decentralizing Tech & Entrepreneurship';
-// let idx = 1;
-// let speed = 300 ;
-// writeText();
-// function writeText() {
-//   textEl.innerText = text.slice(0, idx);
-//   idx++;
-//   if (idx > text.length) {
-//     idx = 1;
-//   }
-//   setTimeout(writeText, speed);
-// }
 </script>
 
 <style scoped>
@@ -66,7 +47,7 @@ export default {
   align-items: left;
   justify-content: left;
   text-align: left;
-  padding:0 40px;
+  padding:0 20px;
 }
 
 .hero__overlay {
@@ -75,6 +56,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+  padding: 0%;
   background-color: rgba(52, 112, 234, 0.8); /* Blue overlay matching screenshot */
   z-index: 1;
 }
@@ -84,8 +66,7 @@ export default {
   flex-direction: column;
   position: relative;
   z-index: 2;
-  max-width: 80%;
-  /* padding: 80px 20px; */
+  max-width: 100%;
 }
 
 h1 {

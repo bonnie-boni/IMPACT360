@@ -50,7 +50,12 @@
         <tbody>
           <tr v-for="event in filteredEvents" :key="event.id" :class="{ 'postponed': event.isPostponed }">
             <td>
-              <img :src="event.thumbnail" :alt="event.title" class="event-thumbnail" />
+              <img
+                  :src="event.thumbnail || '/images/default-event.jpg'"
+                  :alt="event.title"
+                  class="event-thumbnail"
+                  @error="handleImageError"
+                />
             </td>
             <td>{{ event.title }}</td>
             <td>{{ formatDate(event.date) }}</td>
@@ -133,11 +138,13 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, getCurrentInstance } from 'vue';
 
 export default {
   name: 'EventsView',
   setup() {
+    const { appContext } = getCurrentInstance();
+
     // Data
     const events = ref([]);
     const searchQuery = ref('');
@@ -150,56 +157,23 @@ export default {
     const newEventDate = ref('');
     const postponeReason = ref('');
 
-    // Fetch events (mock data for now)
-    onMounted(() => {
-      // This would typically be an API call
-      events.value = [
-        {
-          id: 1,
-          title: 'Tech Conference 2025',
-          thumbnail: '/api/placeholder/100/80',
-          description: 'Annual technology conference featuring the latest innovations',
-          date: '2025-07-15T09:00:00',
-          price: 5000,
-          ticketsSold: 120,
-          isPostponed: false,
-          originalDate: null
-        },
-        {
-          id: 2,
-          title: 'Music Festival',
-          thumbnail: '/api/placeholder/100/80',
-          description: 'A vibrant celebration of local music talents',
-          date: '2025-06-20T18:00:00',
-          price: 2500,
-          ticketsSold: 350,
-          isPostponed: true,
-          originalDate: '2025-05-20T18:00:00'
-        },
-        {
-          id: 3,
-          title: 'Entrepreneurship Workshop',
-          thumbnail: '/api/placeholder/100/80',
-          description: 'Learn key skills to launch your startup',
-          date: '2025-05-10T10:00:00',
-          price: 1000,
-          ticketsSold: 75,
-          isPostponed: false,
-          originalDate: null
-        },
-        {
-          id: 4,
-          title: 'Charity Gala',
-          thumbnail: '/api/placeholder/100/80',
-          description: 'Annual fundraising event for local charities',
-          date: '2024-11-10T19:00:00',
-          price: 10000,
-          ticketsSold: 200,
-          isPostponed: false,
-          originalDate: null
-        }
-      ];
+    // Fetch events from Supabase
+    onMounted(async () => {
+      await fetchEvents();
     });
+
+    const fetchEvents = async () => {
+      const { data, error } = await appContext.config.globalProperties.$supabase
+        .from('events')
+        .select('*');
+
+      if (error) {
+        console.error('Error fetching events:', error);
+        alert('Error fetching events');
+      } else {
+        events.value = data;
+      }
+    };
 
     // Filter events based on search and status
     const filteredEvents = computed(() => {
@@ -300,39 +274,50 @@ export default {
       deleteModalVisible.value = true;
     };
 
-    const postponeEvent = () => {
+    const postponeEvent = async () => {
       if (!newEventDate.value) {
         alert('Please select a new date for the event');
         return;
       }
 
-      // Find and update the event
-      const eventToUpdate = events.value.find(e => e.id === selectedEvent.value.id);
-      if (eventToUpdate) {
-        if (!eventToUpdate.isPostponed) {
-          eventToUpdate.originalDate = eventToUpdate.date;
-        }
-        eventToUpdate.date = newEventDate.value;
-        eventToUpdate.isPostponed = true;
+      const { data, error } = await appContext.config.globalProperties.$supabase
+        .from('events')
+        .update({
+          date: newEventDate.value,
+          isPostponed: true,
+          originalDate: selectedEvent.value.date // Store original date
+        })
+        .eq('id', selectedEvent.value.id)
+        .select();
 
-        // Here you would typically save to API
-        console.log('Event postponed:', eventToUpdate);
-        console.log('Reason:', postponeReason.value);
-
-        // Close modal
+      if (error) {
+        console.error('Error postponing event:', error);
+        alert('Error postponing event');
+      } else {
+        console.log('Event postponed:', data);
+        // Update the events array
+        events.value = events.value.map(event =>
+          event.id === selectedEvent.value.id ? { ...event, date: newEventDate.value, isPostponed: true } : event
+        );
         postponeModalVisible.value = false;
       }
     };
 
-    const deleteEvent = () => {
-      // Remove the event
-      events.value = events.value.filter(e => e.id !== selectedEvent.value.id);
+    const deleteEvent = async () => {
+      const { error } = await appContext.config.globalProperties.$supabase
+        .from('events')
+        .delete()
+        .eq('id', selectedEvent.value.id);
 
-      // Here you would typically call API to delete
-      console.log('Event deleted:', selectedEvent.value);
-
-      // Close modal
-      deleteModalVisible.value = false;
+      if (error) {
+        console.error('Error deleting event:', error);
+        alert('Error deleting event');
+      } else {
+        console.log('Event deleted:', selectedEvent.value);
+        // Update the events array
+        events.value = events.value.filter(e => e.id !== selectedEvent.value.id);
+        deleteModalVisible.value = false;
+      }
     };
 
     return {
