@@ -12,4 +12,4 @@ const supabase = createClient(supabaseUrl, supabaseKey)
 
 const app = createApp(App)
 app.config.globalProperties.$supabase = supabase
-createApp(App).use(router).mount('#app')
+app.use(router).mount('#app')

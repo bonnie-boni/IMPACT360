@@ -111,10 +111,10 @@
               <label>Featured Event</label>
               <div class="switch-container">
                 <label class="switch">
-                  <input type="checkbox" v-model="event.isFeatured">
+                  <input type="checkbox" v-model="event.isfeatured">
                   <span class="slider"></span>
                 </label>
-                <span class="switch-label">{{ event.isFeatured ? 'Yes' : 'No' }}</span>
+                <span class="switch-label">{{ event.isfeatured ? 'Yes' : 'No' }}</span>
               </div>
             </div>
           </div>
@@ -132,7 +132,12 @@
 
         <div class="form-actions">
           <button type="button" class="cancel-btn" @click="$router.push('/admin/events')">Cancel</button>
-          <button type="submit" class="save-btn">{{ isEditing ? 'Update Event' : 'Create Event' }}</button>
+          <button type="submit" class="save-btn" :disabled="isSaving || isUploading">
+            <span v-if="isSaving">
+              <LoadingSpinner />
+            </span>
+            <span v-else>{{ isEditing ? 'Update Event' : 'Create Event' }}</span>
+          </button>
         </div>
       </form>
     </div>
@@ -142,22 +147,24 @@
 <script>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
-const supabase = createClient(supabaseUrl, supabaseKey)
+import { supabase } from '@/services/supabase';
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
 
 export default {
   name: 'CreateEditEvent',
+  components: {
+    LoadingSpinner
+  },
   setup() {
     const route = useRoute();
     const router = useRouter();
     const eventId = computed(() => route.params.id);
     const isEditing = computed(() => !!eventId.value);
     const thumbnailPreview = ref(null);
+    const uploadError = ref(null);
+    const isUploading = ref(false);
+    const isSaving = ref(false);
 
-    // Initialize empty event object
     const event = ref({
       title: '',
       date: '',
@@ -166,100 +173,159 @@ export default {
       location: '',
       capacity: '',
       category: '',
-      isFeatured: false,
+      isfeatured: false,
       thumbnail: null,
       ticketsSold: 0,
       isPostponed: false,
       originalDate: null
     });
 
-    // Load event data if editing
     onMounted(() => {
-      if (isEditing.value) {
-        // In a real app, you would fetch from API using eventId
-        // This is mock data for demonstration
-        fetchEventData(eventId.value);
-      } else {
-        // Set default date to tomorrow
+      if (!isEditing.value) {
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         tomorrow.setHours(10, 0, 0, 0);
         event.value.date = tomorrow.toISOString().slice(0, 16);
+      } else {
+        fetchEventData(eventId.value);
       }
     });
 
-    // Fetch event data from Supabase
     const fetchEventData = async (id) => {
-      const { data, error } = await supabase
-        .from('events')
-        .select('*')
-        .eq('id', id)
-        .single()
+      try {
+        const { data, error } = await supabase
+          .from('events')
+          .select('*')
+          .eq('id', id)
+          .single();
 
-      if (error) {
-        console.error('Error fetching event:', error)
-        alert('Error fetching event')
-        router.push('/admin/events')
-      } else {
-        event.value = { ...data }
-        event.value.date = event.value.date.substring(0, 16) // Format for datetime-local input
-        thumbnailPreview.value = data.thumbnail
+        if (error) throw error;
+
+        event.value = { ...data };
+        event.value.date = data.date.substring(0, 16);
+        thumbnailPreview.value = data.thumbnail;
+      } catch (error) {
+        console.error('Error fetching event:', error);
+        alert('Error fetching event data. Please try again.');
+        router.push('/admin/events');
       }
-    }
+    };
 
-    // Handle thumbnail upload
-    const handleThumbnailUpload = (e) => {
+    const resizeImage = (file, maxWidth, maxHeight, quality = 0.8) => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = URL.createObjectURL(file);
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          // Calculate new dimensions while maintaining aspect ratio
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const resizedFile = new File([blob], file.name, {
+                  type: 'image/jpeg',
+                  lastModified: Date.now()
+                });
+                resolve(resizedFile);
+              } else {
+                reject(new Error('Failed to resize image'));
+              }
+            },
+            'image/jpeg',
+            quality
+          );
+        };
+        img.onerror = () => reject(new Error('Failed to load image'));
+      });
+    };
+
+    const handleThumbnailUpload = async (e) => {
       const file = e.target.files[0];
+      uploadError.value = null;
+
       if (!file) return;
 
-      // Check file size (max 2MB)
-      if (file.size > 2 * 1024 * 1024) {
-        alert('File size exceeds 2MB limit');
+      const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        uploadError.value = 'Invalid file type. Please upload a JPG, PNG, or WebP image.';
         return;
       }
 
-      // Create preview URL
-      thumbnailPreview.value = URL.createObjectURL(file);
-      event.value.thumbnail = file;
-    };
-
-    const uploadEvent = async () => {
-      const eventData = {
-        title: event.value.title,
-        date: event.value.date,
-        description: event.value.description,
-        price: event.value.price,
-        location: event.value.location,
-        capacity: event.value.capacity,
-        category: event.value.category,
-        isFeatured: event.value.isFeatured,
-        image: event.value.thumbnail ? event.value.thumbnail.name : null, // Store image name
-      };
-
-      let query = supabase.from('events');
-
-      if (isEditing.value) {
-        query = query.update(eventData).eq('id', eventId.value);
-      } else {
-        query = query.insert([eventData]);
+      if (file.size > 2 * 1024 * 1024) {
+        uploadError.value = 'File size exceeds 2MB limit.';
+        return;
       }
 
-      const { data, error } = await query.select();
-
-      if (error) {
-        console.error('Error saving event:', error);
-        alert('Error saving event');
-      } else {
-        console.log('Event saved successfully:', data);
-        alert('Event saved successfully');
+      try {
+        // Resize image to max 800x600
+        const resizedFile = await resizeImage(file, 800, 600);
+        thumbnailPreview.value = URL.createObjectURL(resizedFile);
+        event.value.thumbnail = resizedFile;
+      } catch (error) {
+        uploadError.value = 'Failed to resize image: ' + error.message;
+        console.error('Resize error:', error);
       }
     };
 
-    // Save event
+    const uploadImage = async () => {
+      if (!event.value.thumbnail) {
+        uploadError.value = 'Please select a thumbnail image';
+        return null;
+      }
+
+      try {
+        isUploading.value = true;
+        const file = event.value.thumbnail;
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${event.value.title}-${Date.now()}.${fileExt}`;
+
+        const { data, error } = await supabase.storage
+          .from('event-thumbnails')
+          .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (error) {
+          if (error.message.includes('Bucket not found')) {
+            uploadError.value = 'Storage bucket not found. Please create a bucket named "event-thumbnails" in your Supabase dashboard.';
+          } else {
+            uploadError.value = `Upload failed: ${error.message}`;
+          }
+          throw error;
+        }
+
+        isUploading.value = false;
+        return supabase.storage.from('event-thumbnails').getPublicUrl(data.path).data.publicUrl;
+      } catch (error) {
+        isUploading.value = false;
+        console.error('Upload error:', error);
+        return null;
+      }
+    };
+
     const saveEvent = async () => {
-      // Validate required fields
       if (!event.value.title || !event.value.date || !event.value.price ||
-        !event.value.description || !event.value.location) {
+          !event.value.description || !event.value.location) {
         alert('Please fill in all required fields');
         return;
       }
@@ -269,27 +335,66 @@ export default {
         return;
       }
 
-      // Here you would typically send data to your API
-      console.log('Saving event:', event.value);
+      try {
+        isSaving.value = true;
+        let imageUrl = event.value.thumbnail;
 
-      await uploadEvent();
+        if (event.value.thumbnail instanceof File) {
+          imageUrl = await uploadImage();
+          if (!imageUrl) {
+            alert(uploadError.value || 'Failed to upload image');
+            isSaving.value = false;
+            return;
+          }
+        }
 
-      // Simulate API call
-      setTimeout(() => {
-        // Navigate back to events list on success
+        const eventData = {
+          title: event.value.title,
+          date: event.value.date,
+          description: event.value.description,
+          price: parseFloat(event.value.price),
+          location: event.value.location,
+          capacity: event.value.capacity ? parseInt(event.value.capacity) : null,
+          category: event.value.category,
+          isfeatured: event.value.isfeatured,
+          thumbnail: imageUrl,
+        };
+
+        let query = supabase.from('events');
+
+        if (isEditing.value) {
+          query = query.update(eventData).eq('id', eventId.value);
+        } else {
+          query = query.insert([eventData]);
+        }
+
+        const { data, error } = await query.select();
+
+        if (error) throw error;
+
+        console.log('Event saved successfully:', data);
+        alert(`Event ${isEditing.value ? 'updated' : 'created'} successfully!`);
         router.push('/admin/events');
-      }, 500);
+      } catch (error) {
+        console.error('Error saving event:', error);
+        alert(`Error saving event: ${error.message}`);
+      } finally {
+        isSaving.value = false;
+      }
     };
 
     return {
       event,
       isEditing,
       thumbnailPreview,
+      uploadError,
+      isUploading,
+      isSaving,
       handleThumbnailUpload,
       saveEvent
-    }
+    };
   },
-}
+};
 </script>
 
 <style scoped>
@@ -503,9 +608,19 @@ input:checked + .slider:before {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 150px;
 }
 
-.save-btn:hover {
+.save-btn:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+.save-btn:hover:not(:disabled) {
   background-color: #27ae60;
 }
 

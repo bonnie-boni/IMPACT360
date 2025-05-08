@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+      <Header />
       <div class="flex-container">
         <!-- Contact Form Section -->
         <div class="contact-form">
@@ -7,36 +8,36 @@
           <p>
             Have questions? We are here to help. Send us a message and we will reply as soon as possible!
           </p>
-  
+
           <form @submit.prevent="sendEmail">
             <div class="form-group">
               <label for="name">Name</label>
               <input v-model="form.name" type="text" id="name" placeholder="Your name" required class="form-control">
             </div>
-  
+
             <div class="form-group">
               <label for="email">Email</label>
               <input v-model="form.email" type="email" id="email" placeholder="your@gmail.com" required class="form-control">
             </div>
-  
+
             <div class="form-group">
               <label for="subject">Subject</label>
               <input v-model="form.subject" type="text" id="subject" placeholder="How can we help?" required class="form-control">
             </div>
-  
+
             <div class="form-group">
               <label for="message">Message</label>
               <textarea v-model="form.message" id="message" placeholder="Your message" rows="6" required class="form-control"></textarea>
             </div>
-  
+
             <button type="submit" class="btn">Send Message</button>
           </form>
-  
+
           <p v-if="responseMessage" class="response-message" :class="{ 'success': success, 'error': !success }">
             {{ responseMessage }}
           </p>
         </div>
-  
+
         <!-- Contact Information Section -->
         <div class="contact-info">
           <div class="info-card">
@@ -71,10 +72,11 @@
       </div>
     </div>
   </template>
-  
+
   <script>
+  import Header from "@/components/Header.vue"
   import emailjs from "emailjs-com";
-  
+
   export default {
     name: "contact",
     data() {
@@ -101,34 +103,34 @@
     },
   };
   </script>
-  
-  <style>
+
+  <style scoped>
   @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
-  
+
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
   }
-  
+
   body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
   }
-  
+
   .container {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem 1rem;
   }
-  
+
   .flex-container {
     display: flex;
     flex-direction: column;
     gap: 2rem;
   }
-  
+
   /* Contact Form Section */
   .contact-form {
     width: 100%;
@@ -137,32 +139,32 @@
     border-radius: 0.5rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
-  
+
   .contact-form h2 {
     font-size: 2rem;
     font-weight: bold;
     color: black;
     margin-bottom: 1rem;
   }
-  
+
   .contact-form p {
     color: Black;
     font-size: 1rem;
     margin-bottom: 1.5rem;
   }
-  
+
   .form-group {
     margin-bottom: 1rem;
-    
+
   }
-  
+
   .form-group label {
     display: block;
     color: black;
     font-weight: 600;
     margin-bottom: 0.5rem;
   }
-  
+
   .form-control {
     width: 100%;
     padding: 0.75rem;
@@ -171,17 +173,17 @@
     background-color: #ffffff;
     transition: all 0.3s;
   }
-  
+
   .form-control:focus {
     outline: none;
     border-color: #4B67BC;
     box-shadow: 0 0 0 3px #0D2D56;
   }
-  
+
   textarea.form-control {
     resize: vertical;
   }
-  
+
   .btn {
     display: block;
     width: 100%;
@@ -194,25 +196,25 @@
     cursor: pointer;
     transition: background-color 0.3s;
   }
-  
+
   .btn:hover {
     background-color: #4B67BC;
   }
-  
+
   .response-message {
     margin-top: 1rem;
     font-weight: 600;
     text-align: center;
   }
-  
+
   .success {
     color: #16a34a;
   }
-  
+
   .error {
     color: #dc2626;
   }
-  
+
   /* Contact Information Section */
   .contact-info {
     width: 100%;
@@ -220,7 +222,7 @@
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .info-card {
     background-color: white;
     padding: 1.25rem;
@@ -230,101 +232,101 @@
     align-items: center;
     gap: 1rem;
   }
-  
+
   .info-icon {
     color: #316CE7;
     font-size: 1.5rem;
   }
-  
+
   .info-content h3 {
     font-size: 1rem;
     font-weight: 600;
   }
-  
+
   .info-content p {
     color: black;
     font-size: 0.875rem;
     margin-top: 0.25rem;
   }
-  
+
   .break-words {
     word-break: break-word;
   }
-  
+
   /* Responsive Design */
   @media (min-width: 640px) {
     .contact-info {
       grid-template-columns: 1fr 1fr;
     }
   }
-  
+
   @media (min-width: 768px) {
     .container {
       padding: 4rem 1rem;
     }
-  
+
     .contact-form {
       padding: 2.5rem;
     }
-  
+
     .contact-form h2 {
       font-size: 2.25rem;
     }
-  
+
     .contact-form p {
       font-size: 1.25rem;
     }
-  
+
     .form-group label {
       font-size: 1.125rem;
     }
-  
+
     .form-control, .btn {
       padding: 1rem;
     }
-  
+
     .info-icon {
       font-size: 1.75rem;
     }
-  
+
     .info-content h3 {
       font-size: 1.125rem;
     }
-  
+
     .info-content p {
       font-size: 1rem;
     }
   }
-  
+
   @media (min-width: 1024px) {
     .container {
       padding: 5rem 1rem;
     }
-  
+
     .flex-container {
       flex-direction: row;
     }
-  
+
     .contact-form {
       width: 60%;
       padding: 3rem;
     }
-  
+
     .contact-form h2 {
       font-size: 2.5rem;
     }
-  
+
     .contact-info {
       width: 40%;
       grid-template-columns: 1fr;
     }
   }
-  
+
   @media (min-width: 1280px) {
     .contact-form {
       width: 65%;
     }
-  
+
     .contact-info {
       width: 35%;
     }

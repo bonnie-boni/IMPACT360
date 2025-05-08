@@ -1,4 +1,6 @@
 <template>
+
+  <!-- <Header /> -->
   <div class="heroAbout">
     <div class="hero__overlay">
       <div class="split left">
@@ -31,8 +33,7 @@
       <h1>Our Story</h1>
       <p>
         Founded in Kenya, Impact360 was created to bridge the gap between talent and opportunity across Africa. We believe innovation should be accessible to everyone — not just in major cities.
-      </p>
-      <p>
+      <br><br>
         Through empowering events, startup incubation, and community-driven initiatives, we are building a thriving network of technopreneurs. Starting in Kenya and expanding across Africa, Impact360 is fueling the next generation of entrepreneurs who will transform their communities — and the continent.
       </p>
       <div class="cards-container">
@@ -94,10 +95,15 @@
       </div>
     </div>
   </div>
+  <!-- <Footer /> -->
 </template>
 
-<script>
+<script setup>
+import Header from '../Header.vue';
 import ImpactCard from '@/components/ImpactCard.vue';
+import Footer from '../Footer.vue';
+</script>
+<script>
 export default {
   name: 'About',
   components: {
@@ -116,8 +122,7 @@ export default {
 .hero__overlay {
   display: flex;
   width: 100%;
-
-  height: 100%;
+  height: max-content;
   position: relative;
   /* background-color: rgba(52, 112, 234, 0.8); */
   /* z-index: 1; */
@@ -134,9 +139,10 @@ export default {
 
 .split.left {
 
-  width: 80%; /* Full width on smaller screens */
+  width: 40%; /* Full width on smaller screens */
   padding: 20px;
   background-color: black;
+  background: linear-gradient(to right, #0D2D56,#4B67BC);
   color: white;
   height: auto; /* Adjust height to content */
 }
@@ -144,11 +150,11 @@ export default {
 .split.left h1 {
   font-size: 2rem; /* Adjust font size for smaller screens */
   margin-bottom: 10px;
-  padding: 60px 20px 0px 40px;
   left: 0;
-  background: linear-gradient(to right, #0D2D56,#4B67BC);
-  color: white; 
-  height: 85vh;
+  color: white;
+  /* padding: 60px 20px 0px 40px; */
+  /* height: 85vh; */
+  /* background: linear-gradient(to right, #0D2D56,#4B67BC); */
 }
 
 .split.left p {
@@ -160,26 +166,26 @@ export default {
 
 .split.right {
 
-  padding: 60px 20px 0px 40px;
   right: 0;
-  width: 50%;
-  height: 85vh;
+  width: 60%;
+  height: auto;
   background-image: url('@/assets/Bg7.jpg');
   background-size: cover;
   min-height: 200px; /* Ensure a minimum height for the background image */
 }
 
 .Story {
-  padding: 40px 200px;
+  padding: 20px 40px;
   background-color: #EFEFEF;
   color: black;
-  text-align: center;
+  text-align:justify;
 
 }
 
 .Story h1 {
   font-size: 2rem;
   margin-bottom: 15px;
+  text-align: center;
 }
 
 .Story p {
@@ -224,12 +230,14 @@ export default {
   }
 
   .split.right {
-    min-height: 50vh;
+    width: auto;
+    min-height: 60vh;
     height: auto;
   }
 
   .Story {
-    text-align: center;
+    padding: auto;
+    /* text-align: center; */
   }
 
   .Story h1 {
@@ -243,7 +251,7 @@ export default {
 
 /* Team Section Styles */
 .team-section {
-  padding: 40px 200px;
+  padding: 40px;
   background-color: #f9f9f9;
   text-align: center;
 }
@@ -273,7 +281,7 @@ export default {
   width: 200%;
   height: 200%;
   object-fit: cover;
- 
+
 }
 .team-info {
   position: absolute;

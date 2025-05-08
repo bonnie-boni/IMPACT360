@@ -9,7 +9,7 @@
         Bringing Technopreneurship Resources Closer to You—Together,We’re Building Africa’s Technopreneurship Ecosystem.
       </p>
       <div class="dtn">
-       <RouterLink to="/i3-launchpad" class="btn1"><button >Join I3LAUNCHPAD</button></RouterLink> 
+       <RouterLink to="/i3-launchpad" class="btn1"><button >Join I3LAUNCHPAD</button></RouterLink>
        <RouterLink to="/events"><button class="btn2">View Events</button></RouterLink>
       </div>
 
@@ -81,7 +81,7 @@ p {
 .dtn{
   gap:20px;
   display: flex;
-  
+
 }
 .dtn button {
   font-family: sans-serif;
