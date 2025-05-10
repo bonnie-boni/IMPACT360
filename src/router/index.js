@@ -8,15 +8,18 @@ import LoginPage from '@/components/LoginPage.vue'
 import RegisterPage from '@/components/RegisterPage.vue'
 import ForgotPass from '@/components/ForgotPass.vue'
 import ongoingEvents from '@/components/ongoingEvents.vue'
+import Ticket from '@/components/Ticket.vue'
 
 const routes = [
+  { path: '/ongoingEvents', name: 'ongoingEvents', component: ongoingEvents },
   { path: '/login', name: 'login', component: LoginPage },
   { path: '/register', name: 'register', component: RegisterPage },
+  { path: '/register/:eventId', name: 'RegisterPage', component: RegisterPage, props: true },
+  { path: '/ticket/:eventId', name: 'Ticket', component: Ticket, props: true },
   { path: '/forgot-password', name: 'forgot-password', component: ForgotPass },
   { path: '/', name: 'home', component: HomeView },
   { path: '/about', name: 'about', component: AboutView },
   { path: '/contact', name: 'contact', component: ContactView },
-  { path: '/ongoingEvents', name: 'ongoingEvents', component: ongoingEvents },
   {
     path: '/admin',
     name: 'admin',
@@ -37,6 +40,10 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 })
+
+router.beforeEach((to, from) => {
+  console.log('Navigating to:', to.path);
+});
 
 // Global navigation guard: if the route is not public and user is not logged in, redirect to login.
 

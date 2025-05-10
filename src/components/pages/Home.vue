@@ -57,7 +57,7 @@ export default {
   width: 100%;
   height: 100%;
   padding: 0%;
-  background-color: rgba(52, 112, 234, 0.8); /* Blue overlay matching screenshot */
+  background-color: #2a6aebcc; /* Blue overlay matching screenshot */
   z-index: 1;
 }
 

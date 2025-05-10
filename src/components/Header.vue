@@ -141,10 +141,11 @@ export default {
   display: flex;
   gap: 1rem;
 }
-
 .desktop-nav ul li {
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
+  justify-items: center;
+  margin: auto;
   color: black;
   transition: all 0.3s ease-in-out;
 }

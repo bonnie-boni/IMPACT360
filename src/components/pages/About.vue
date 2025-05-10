@@ -124,6 +124,7 @@ export default {
   width: 100%;
   height: max-content;
   position: relative;
+  min-height: 80vh;
   /* background-color: rgba(52, 112, 234, 0.8); */
   /* z-index: 1; */
 
