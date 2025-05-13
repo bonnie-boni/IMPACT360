@@ -203,7 +203,13 @@ import { createClient } from '@supabase/supabase-js';
 
 export default {
   name: 'Register',
-  setup() {
+  props: {
+    eventId: {
+      type: String,
+      required: false
+    }
+  },
+  setup(props) {
     const router = useRouter();
 
     // Supabase client initialization
@@ -300,8 +306,8 @@ export default {
 
         if (error) throw error;
 
-        // Redirect to login or verification page
-        router.push('/login');
+        // Redirect to tickets page
+        router.push(`/ticket/${props.eventId}`);
 
       } catch (error) {
         authError.value = error.message || 'Registration failed. Please try again.';

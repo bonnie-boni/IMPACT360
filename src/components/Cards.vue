@@ -8,7 +8,7 @@
 
     <!-- Events List -->
     <div class="events-container">
-      <div v-for="(event, index) in events.slice(0, 3)" :key="index" class="event-card">
+      <div v-for="(event, index) in events.filter(isOngoingEvent)" :key="index" class="event-card">
         <img
           :src="event.thumbnail || '/images/default-event.jpg'"
           :alt="event.title"
@@ -38,10 +38,11 @@
 <script>
 import { createClient } from '@supabase/supabase-js';
 import { useRouter } from 'vue-router';
+import { supabase } from '@/services/supabase.js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+//const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default {
   name: 'Cards',
@@ -52,33 +53,12 @@ export default {
   },
   methods: {
     async goToLink(eventId) {
-      const { data: { user } } = await supabase.auth.getUser();
-
-      if (!user) {
-        this.router.push('/login');
-        return;
-      }
-
-      // Check if the user is registered for the event
-      const { data: registration, error: registrationError } = await supabase
-        .from('registrations')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('event_id', eventId)
-        .single();
-
-      if (registrationError) {
-        console.error('Error checking registration:', registrationError);
-        return;
-      }
-
-      if (registration) {
-        // User is registered, go to ticket page
-        this.router.push({ name: 'Ticket', params: { eventId: eventId } });
-      } else {
-        // User is not registered, go to registration page
-        this.router.push({ name: 'RegisterPage', params: { eventId: eventId } });
-      }
+      this.router.push({ name: 'Ticket', params: { id: eventId } });
+    },
+    async signOut() {
+      const { error } = await supabase.auth.signOut()
+      if (error) console.error('Error signing out:', error)
+      this.router.push('/login')
     },
     handleImageError(event, index) {
       console.error(`Failed to load image for event ${index}: ${this.events[index].thumbnail}`);

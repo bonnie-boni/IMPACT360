@@ -40,10 +40,10 @@
                 v-model="event.price"
                 placeholder="Enter ticket price in KSH"
                 min="0"
-                step="100"
                 required
               />
             </div>
+
 
             <div class="form-group">
               <label for="location">Event Location <span class="required">*</span></label>

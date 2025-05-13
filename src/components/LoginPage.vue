@@ -184,8 +184,8 @@ export default {
 
         if (error) throw error;
 
-        // Redirect to dashboard
-        router.push('/dashboard');
+        localStorage.setItem('isLoggedIn', 'true');
+        router.push('/admin/dashboard');
 
       } catch (error) {
         authError.value = error.message || 'Failed to sign in. Please check your credentials.';
@@ -219,7 +219,7 @@ export default {
       const { data } = await supabase.auth.getSession();
       if (data.session) {
         // User is already logged in, redirect to dashboard
-        router.push('/dashboard');
+        router.push('/admin/dashboard');
       }
     });
 
@@ -232,6 +232,10 @@ export default {
       handleLogin,
       socialLogin
     };
+
+    onUnmounted(() => {
+      localStorage.removeItem('isLoggedIn');
+    });
   }
 }
 </script>

@@ -14,8 +14,8 @@ const routes = [
   { path: '/ongoingEvents', name: 'ongoingEvents', component: ongoingEvents },
   { path: '/login', name: 'login', component: LoginPage },
   { path: '/register', name: 'register', component: RegisterPage },
-  { path: '/register/:eventId', name: 'RegisterPage', component: RegisterPage, props: true },
-  { path: '/ticket/:eventId', name: 'Ticket', component: Ticket, props: true },
+  { path: '/register/:eventId', name: 'register', component: RegisterPage, props: true },
+  { path: '/ticket/:id', name: 'Ticket', component: Ticket, props: true },
   { path: '/forgot-password', name: 'forgot-password', component: ForgotPass },
   { path: '/', name: 'home', component: HomeView },
   { path: '/about', name: 'about', component: AboutView },
@@ -43,6 +43,23 @@ const router = createRouter({
 
 router.beforeEach((to, from) => {
   console.log('Navigating to:', to.path);
+});
+
+function isLoggedIn() {
+  // Replace this with your actual authentication logic
+  return localStorage.getItem('isLoggedIn') === 'true';
+}
+
+router.beforeEach((to, from, next) => {
+  if (to.path.startsWith('/admin')) {
+    if (!isLoggedIn()) {
+      next('/login');
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
 });
 
 // Global navigation guard: if the route is not public and user is not logged in, redirect to login.

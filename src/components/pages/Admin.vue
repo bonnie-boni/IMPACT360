@@ -44,6 +44,11 @@
         </router-link>
       </div>
 
+      <router-link to="/login" class="menu-item">
+        <i class="fas fa-sign-in-alt"></i>
+        <span v-if="!sidebarCollapsed">Login</span>
+      </router-link>
+
       <div class="sidebar-footer">
         <button class="logout-btn" @click="logout">
           <i class="fas fa-sign-out-alt"></i>
@@ -79,6 +84,7 @@
 <script>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { supabase } from '@/services/supabase.js';
 
 export default {
   name: 'AdminDashboard',
@@ -88,6 +94,22 @@ export default {
     const searchQuery = ref('');
     const route = useRoute();
     const router = useRouter();
+
+    onMounted(async () => {
+      const { data: { session }, error } = await supabase.auth.getSession()
+
+      if (!session) {
+        router.push('/login');
+      }
+      const savedState = localStorage.getItem('sidebarState');
+      if (savedState) {
+        sidebarCollapsed.value = savedState === 'collapsed';
+      }
+      // Close mobile sidebar on route change
+      router.afterEach(() => {
+        showMobileSidebar.value = false;
+      });
+    });
 
     const currentRoute = computed(() => route.path);
 
