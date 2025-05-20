@@ -208,7 +208,7 @@
   }
 
   .success {
-    color: #16a34a;
+    color: lightgreen;
   }
 
   .error {

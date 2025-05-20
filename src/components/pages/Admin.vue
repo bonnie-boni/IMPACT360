@@ -7,7 +7,7 @@
     <div class="sidebar" :class="{ 'sidebar-collapsed': sidebarCollapsed, 'sidebar-mobile': showMobileSidebar }">
       <div class="sidebar-header">
         <div>
-          <img src="/home/bonnie/Desktop/impact 360/IMPACT360/src/assets/icon.png" alt="Company logo" class="logo" />
+          <img src="../../assets/icon.png" alt="Company logo" class="logo" />
         </div>
         <div>
           <button class="toggle-btn" @click="toggleSidebar">

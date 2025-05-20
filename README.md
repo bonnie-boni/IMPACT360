@@ -50,4 +50,3 @@ npm install tailwindcss postcss autoprefixer
 ```bash
 npx tailwindcss init -p
 ```
-

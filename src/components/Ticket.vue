@@ -104,7 +104,7 @@
                 id="phoneNumber"
                 v-model="formData.phoneNumber"
                 placeholder="7XXXXXXXX"
-                pattern="^[7|1][0-9]{8}$"
+                pattern="^[71][0-9]{8}$"
                 required
               />
             </div>
@@ -181,6 +181,9 @@ export default {
           throw new Error('Event not found');
         }
 
+        console.log('Event ID:', eventId);
+        console.log('Event data:', data);
+
         this.event = {
           id: data.id,
           title: data.title,
@@ -216,13 +219,13 @@ export default {
     },
     validateForm() {
       if (!this.formData.name || !this.formData.email || !this.formData.phoneNumber) {
-        alert('Please fill in all required fields');
+        this.error = 'Please fill in all required fields';
         return false;
       }
 
-      const phonePattern = /^[7|1][0-9]{8}$/;
+      const phonePattern = /^[71][0-9]{8}$/;
       if (!phonePattern.test(this.formData.phoneNumber)) {
-        alert('Please enter a valid phone number starting with 7 or 1 followed by 8 digits');
+        this.error = 'Please enter a valid phone number starting with 7 or 1 followed by 8 digits';
         return false;
       }
 
@@ -235,20 +238,48 @@ export default {
       this.error = null;
 
       try {
-        // Simulate STK push request to M-Pesa
-        const phoneNumber = `254${this.formData.phoneNumber}`; // Format phone number
+        let phoneNumber = this.formData.phoneNumber;
+        console.log('phoneNumber before modification:', phoneNumber);
+        if (phoneNumber.startsWith('0')) {
+          phoneNumber = phoneNumber.substring(1);
+        }
+        phoneNumber = `254${phoneNumber}`;
         const amount = this.event.price;
-        const accountReference = `TICKET_${this.event.id}_${Date.now()}`; // Unique reference
+        const accountReference = `${this.event.id}_${Date.now()}`;
         const transactionDesc = `Payment for ${this.event.title}`;
+        const email = this.formData.email;
+        const eventId = this.event.id;
+        const customerName = this.formData.name;
 
-        // Mock API call to M-Pesa STK push (replace with real API in production)
-        const response = await this.simulateStkPush(phoneNumber, amount, accountReference, transactionDesc);
+        const response = await fetch('/api/mpesa/stkpush', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': 'impact360'
+          },
+          body: JSON.stringify({
+            phoneNumber: String(phoneNumber),
+            amount,
+            accountReference,
+            transactionDesc,
+            email,
+            eventId,
+            customerName
+          })
+        });
 
-        if (response.success) {
+        if (!response.ok) {
+          const message = `An error occurred: ${response.status}`;
+          throw new Error(message);
+        }
+        const data = await response.json();
+
+        if (data && data.status === 'success') {
           this.showConfirmation = true;
-          console.log('STK Push initiated:', response);
+          console.log('STK Push initiated:', data);
+          console.log('data:', data);
         } else {
-          throw new Error(response.message || 'Failed to initiate STK push');
+          throw new Error(data.message || 'Failed to initiate STK push');
         }
       } catch (err) {
         this.error = err.message || 'An error occurred during payment initiation';
@@ -257,27 +288,6 @@ export default {
         this.isProcessing = false;
       }
     },
-    async simulateStkPush(phoneNumber, amount, accountReference, transactionDesc) {
-      // Simulated STK push response (mocks M-Pesa API behavior)
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          // Simulate success or failure randomly for demo purposes
-          const isSuccess = Math.random() > 0.2; // 80% success rate
-          if (isSuccess) {
-            resolve({
-              success: true,
-              message: `STK push sent to ${phoneNumber} for KSH ${amount}`,
-              checkoutRequestID: `ws_CO_${Date.now()}`
-            });
-          } else {
-            resolve({
-              success: false,
-              message: 'Insufficient funds or invalid phone number'
-            });
-          }
-        }, 2000); // Simulate network delay
-      });
-    }
   }
 };
 </script>
@@ -287,7 +297,8 @@ export default {
 .ticket-card-container {
   position: relative;
   max-width: 600px;
-  margin: 40px auto;
+  margin: 2% auto;
+
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -558,7 +569,8 @@ export default {
 }
 
 .error-message p {
-  color: #e74c3c;
+  color: #ff0000;
   font-size: 16px;
 }
+
 </style>

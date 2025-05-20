@@ -8,7 +8,7 @@
 
     <!-- Events List -->
     <div class="events-container">
-      <div v-for="(event, index) in events.filter(isOngoingEvent)" :key="index" class="event-card">
+      <div v-for="(event, index) in eventsToShow" :key="index" class="event-card">
         <img
           :src="event.thumbnail || '/images/default-event.jpg'"
           :alt="event.title"
@@ -26,9 +26,13 @@
           >
             Register Now
           </button>
-          <span v-else class="register-btn-placeholder">
-            <button class="register-btn disabled" disabled>Registration Closed</button>
-          </span>
+          <button
+            v-else
+            class="register-btn disabled"
+            disabled
+          >
+            Registration Closed
+          </button>
         </div>
       </div>
     </div>
@@ -46,6 +50,12 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 export default {
   name: 'Cards',
+  props: {
+    showAllEvents: {
+      type: Boolean,
+      default: false
+    }
+  },
   setup() {
     const router = useRouter();
 
@@ -79,14 +89,21 @@ export default {
       }
       const eventDate = new Date(event.date);
       const currentDate = new Date();
-      // Set currentDate to start of day for comparison
-      currentDate.setHours(0, 0, 0, 0);
       const isFutureOrToday = eventDate >= currentDate;
       const isNotPostponed = event.status?.toLowerCase() !== 'postponed';
       if (!event.status) {
         console.warn(`Event ${event.title} has no status field; assuming ongoing if date is valid`);
       }
       return isFutureOrToday && isNotPostponed;
+    }
+  },
+  computed: {
+    eventsToShow() {
+      if (this.showAllEvents) {
+        return this.events;
+      } else {
+        return this.events.filter(this.isOngoingEvent);
+      }
     }
   },
   data() {

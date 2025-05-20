@@ -1,9 +1,9 @@
 <template>
   <div class='template-body'>
     <Header/>
-    <router-view/>
-    <Footer/>
+    <router-view class="content-body" />
   </div>
+  <Footer/>
 </template>
 
 <script setup>
@@ -13,6 +13,11 @@ import Footer from './components/Footer.vue'
 
 <style scoped>
   .template-body{
+    /* min-height: 75vh; */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     overflow-x: hidden;
+    justify-content: space-between;
   }
 </style>

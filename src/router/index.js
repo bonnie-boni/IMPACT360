@@ -28,6 +28,7 @@ const routes = [
     children: [
       { path: 'create-event', name: 'create-event', component: CreateEditEvent },
       { path: 'events', name: 'events', component: Events },
+      { path: 'events/:id/edit', name: 'edit-event', component: CreateEditEvent, props: true },
       { path: 'dashboard', name: 'dashboard', component: Dashboard },
       { path: 'analytics', name: 'analytics', component: () => import('../components/Analytics.vue') },
     ],
